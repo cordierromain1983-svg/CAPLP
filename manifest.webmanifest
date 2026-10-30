@@ -1,0 +1,13 @@
+{
+  "name": "Cap'Autonomie",
+  "short_name": "Cap'Autonomie",
+  "description": "Comprendre, apprendre, agir, devenir autonome.",
+  "lang": "fr",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#F7F7F4",
+  "theme_color": "#1B1F24",
+  "icons": [
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
