@@ -2,7 +2,7 @@
 
 Application pédagogique pour le lycée professionnel : sept piliers (CPS, EVARS, Cyber, Orientation, EDUCFI, Droits, E3D), une boîte à outils et un espace personnel.
 
-**Version actuelle : pilier CPS, Seconde « Moi » et Première « Moi et les autres » (10 séances).** Les autres piliers et niveaux apparaissent comme « Bientôt ».
+**Version actuelle : pilier CPS complet, de la Seconde à la Terminale (15 séances).** Les autres piliers et niveaux apparaissent comme « Bientôt ».
 
 ## Principes
 
@@ -30,6 +30,7 @@ Ouvrez **`js/config.js`** : c'est le seul fichier à modifier. Renseignez le nom
 | `data/piliers.js` | Les 7 piliers (nom, couleur, actif ou non) et les niveaux |
 | `data/cps-seconde.js` | Les 5 séances CPS de Seconde |
 | `data/cps-premiere.js` | Les 5 séances CPS de Première |
+| `data/cps-terminale.js` | Les 5 séances CPS de Terminale |
 | `js/engines.js` | Les moteurs d'activités réutilisables |
 | `js/app.js` | Les pages et la navigation |
 | `css/app.css` | L'apparence |
@@ -53,6 +54,10 @@ Pour ajouter un niveau ou un pilier, créez un fichier `data/<pilier>-<niveau>.j
 | `defi` | Défi collaboratif : chaque élève du groupe voit des indices différents (hors ligne) |
 | `binome` | Minuteur d'écoute en binôme, avec sujets tirés au sort |
 | `reformuler` | Atelier de reformulation (message « Je ») qui repère les mots qui accusent |
+| `tas` | Trier des cartes en tas sans bonne réponse, puis garder les cartes clés (valeurs) |
+| `debat` | Débat mouvant : se placer avant puis après le débat, avec un point de repère |
+| `repertoire` | Liste filtrable par thème (carte des engagements), complétée par `js/config.js` |
+| `cercles` | Projet en quatre cercles, avec reprise des traces des séances précédentes |
 
 ## Liens entre piliers
 

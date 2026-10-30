@@ -749,9 +749,242 @@
     item();
   }
 
+  // =====================================================================
+  // 12. TRI EN TAS (sans bonne réponse) puis sélection des cartes clés
+  //    config : { cle, cartes:[{nom, ex}], tas:[...], garder, resume }
+  // =====================================================================
+  function tas(zone, cfg, ctx) {
+    var etat = Store.get(cfg.cle, { classement: {}, choix: [] });
+    function sauver() { Store.set(cfg.cle, etat); }
+    function rendu() {
+      vider(zone);
+      var restantes = cfg.cartes.filter(function (c) { return !etat.classement[c.nom]; });
+      if (restantes.length) return trier(restantes);
+      selection();
+    }
+    function trier(restantes) {
+      var c = restantes[0], fait = cfg.cartes.length - restantes.length;
+      zone.appendChild(h("div", { class: "progression", "aria-hidden": "true" }, h("span", { style: "width:" + Math.round(fait / cfg.cartes.length * 100) + "%" })));
+      zone.appendChild(h("span", { class: "texte-doux", text: "Carte " + (fait + 1) + " sur " + cfg.cartes.length }));
+      zone.appendChild(h("div", { class: "carte-jeu", tabindex: "-1" }, h("span", null, c.nom, c.ex ? h("span", { class: "ex", style: "display:block;font-size:14px;font-weight:400;color:#4A5260;margin-top:6px", text: c.ex }) : null)));
+      zone.appendChild(h("div", { class: "choix-grille", role: "group", "aria-label": "Dans quel tas ?" }, cfg.tas.map(function (t) {
+        return h("button", { class: "option", type: "button", text: t, on: { click: function () { etat.classement[c.nom] = t; sauver(); rendu(); } } });
+      })));
+      if (fait) zone.appendChild(h("button", { class: "btn secondaire petit", type: "button", style: "align-self:flex-start", on: { click: function () {
+        var dernier = cfg.cartes.filter(function (x) { return etat.classement[x.nom]; }).pop();
+        if (dernier) { delete etat.classement[dernier.nom]; sauver(); rendu(); }
+      } } }, icone("retour"), "Revenir à la carte précédente"));
+      var titre = zone.querySelector(".carte-jeu"); if (titre && fait) annoncer(titre);
+    }
+    function selection() {
+      var premier = cfg.cartes.filter(function (c) { return etat.classement[c.nom] === cfg.tas[0]; });
+      var second = cfg.cartes.filter(function (c) { return etat.classement[c.nom] === cfg.tas[1]; });
+      var candidates = premier.length >= cfg.garder ? premier : premier.concat(second);
+      etat.choix = etat.choix.filter(function (n) { return candidates.some(function (c) { return c.nom === n; }); });
+      zone.appendChild(h("p", { style: "font-weight:700", text: "Parmi tes cartes « " + cfg.tas[0] + " »" + (candidates.length > premier.length ? " et « " + cfg.tas[1] + " »" : "") + ", garde tes " + cfg.garder + " " + (cfg.mot || "cartes clés") + "." }));
+      zone.appendChild(h("p", { class: "texte-doux", "aria-live": "polite", text: etat.choix.length + " choisie(s) sur " + cfg.garder + "." }));
+      zone.appendChild(h("div", { class: "grille-2 large-3" }, candidates.map(function (c) {
+        var sel = etat.choix.indexOf(c.nom) >= 0;
+        return h("button", { class: "option carte-select" + (sel ? " choisi" : ""), type: "button", "aria-pressed": sel ? "true" : "false", on: { click: function () {
+          var k = etat.choix.indexOf(c.nom);
+          if (k >= 0) etat.choix.splice(k, 1);
+          else if (etat.choix.length < cfg.garder) etat.choix.push(c.nom);
+          else { CapApp.toast("Tu en as déjà " + cfg.garder + ". Retire-en une d'abord."); return; }
+          sauver(); vider(zone); selection();
+          if (etat.choix.length === Math.min(cfg.garder, candidates.length) && ctx && ctx.fini) ctx.fini();
+        } } }, h("span", { class: "coche" }, sel ? icone("coche") : null), h("span", null, c.nom, c.ex ? h("span", { class: "ex", text: c.ex }) : null));
+      })));
+      if (etat.choix.length) zone.appendChild(h("div", { class: "retour-info" }, h("strong", { text: (cfg.resume || "Mes choix") + " : " }), etat.choix.join(", ") + "."));
+      zone.appendChild(h("button", { class: "btn secondaire petit", type: "button", style: "align-self:flex-start", on: { click: function () {
+        if (!confirm("Recommencer le tri depuis le début ?")) return;
+        etat = { classement: {}, choix: [] }; sauver(); rendu();
+      } } }, icone("relance"), "Recommencer le tri"));
+    }
+    rendu();
+  }
+
+  // =====================================================================
+  // 13. DÉBAT MOUVANT individuel : je me positionne avant, puis après le débat
+  //    config : { affirmations:[{ texte, repere }] }
+  // =====================================================================
+  function debat(zone, cfg, ctx) {
+    var POS = ["Pas d'accord", "Ça dépend", "D'accord"];
+    var finis = 0;
+    cfg.affirmations.forEach(function (a, k) {
+      var carte = h("div", { class: "carte pile" });
+      carte.appendChild(h("span", { class: "etiquette", text: "Affirmation " + (k + 1) }));
+      carte.appendChild(h("p", { style: "font-weight:700;font-size:17px", text: "« " + a.texte + " »" }));
+      var suite = h("div", { class: "pile", "aria-live": "polite" });
+      function rangee(titre, apres) {
+        var g = h("div", { class: "choix-grille", role: "group", "aria-label": titre });
+        POS.forEach(function (p) {
+          g.appendChild(h("button", { class: "option", type: "button", text: p, on: { click: function (ev) {
+            Array.prototype.forEach.call(g.children, function (x) { x.disabled = true; x.classList.remove("choisi"); });
+            ev.currentTarget.classList.add("choisi");
+            apres(p);
+          } } }));
+        });
+        return h("div", { class: "pile", style: "gap:6px" }, h("span", { class: "texte-doux", text: titre }), g);
+      }
+      carte.appendChild(rangee("Avant le débat, je me place :", function (avant) {
+        vider(suite);
+        suite.appendChild(h("p", { class: "note", text: "Débattez en classe, écoutez les arguments. Puis replace-toi." }));
+        suite.appendChild(rangee("Après le débat, je me place :", function (apres) {
+          suite.appendChild(h("div", { class: "retour-info" }, h("strong", { text: avant === apres ? "Tu as gardé ta position. " : "Tu as changé d'avis : c'est une force, pas une faiblesse. " }), "Ce qu'il faut savoir : " + a.repere));
+          finis++;
+          if (finis >= cfg.affirmations.length && ctx && ctx.fini) ctx.fini();
+        }));
+      }));
+      carte.appendChild(suite);
+      zone.appendChild(carte);
+    });
+    zone.appendChild(h("p", { class: "note", text: "Rien n'est enregistré : tes positions restent pour toi." }));
+  }
+
+  // =====================================================================
+  // 14. RÉPERTOIRE filtrable (carte des engagements, ressources…)
+  //    config : { themes:[...], items:[{ nom, theme, age, description, url }], locaux: "cle de CAP_CONFIG" }
+  // =====================================================================
+  function repertoire(zone, cfg, ctx) {
+    var items = cfg.items.slice();
+    var locaux = cfg.locaux && window.CAP_CONFIG && window.CAP_CONFIG[cfg.locaux];
+    if (locaux && locaux.length) items = locaux.map(function (l) { return { nom: l.nom, theme: l.theme, age: l.age, description: l.description, url: l.url, local: true }; }).concat(items);
+    var filtre = "Tout";
+    var liste = h("div", { class: "pile" });
+    var puces = h("div", { class: "ligne", role: "group", "aria-label": "Filtrer par thème" });
+    function maj() {
+      vider(puces);
+      ["Tout"].concat(cfg.themes).forEach(function (t) {
+        puces.appendChild(h("button", { class: "puce" + (t === filtre ? " active" : ""), type: "button", "aria-pressed": t === filtre ? "true" : "false", text: t, on: { click: function () { filtre = t; maj(); } } }));
+      });
+      vider(liste);
+      items.filter(function (it) { return filtre === "Tout" || it.theme === filtre; }).forEach(function (it) {
+        var contenu = [
+          h("span", { class: "pile", style: "gap:2px;flex:1" },
+            h("span", { class: "t", text: it.nom }),
+            h("span", { class: "s", text: [it.local ? "Près de chez toi" : null, it.theme, it.age].filter(Boolean).join(" · ") }),
+            h("span", { class: "s", style: "color:#2A2F36", text: it.description }))
+        ];
+        liste.appendChild(it.url
+          ? h("a", { class: "lien-ext", href: it.url, target: "_blank", rel: "noopener", on: { click: function () { if (ctx && ctx.fini) ctx.fini(); } } }, contenu, h("span", { class: "sr-only", text: "(s'ouvre dans un nouvel onglet)" }), icone("fleche"))
+          : h("div", { class: "lien-ext" }, contenu));
+      });
+      if (!locaux || !locaux.length) liste.appendChild(h("p", { class: "note", text: "Les initiatives proches du lycée peuvent être ajoutées par l'établissement." }));
+    }
+    zone.appendChild(puces);
+    zone.appendChild(liste);
+    maj();
+    if (ctx && ctx.fini) ctx.fini();
+  }
+
+  // =====================================================================
+  // 15. MON PROJET EN CERCLES : des étiquettes, chacune placée dans un ou plusieurs cercles
+  //    config : { cle, cercles:[{ id, nom, question }], importer:[{ cle, type, label }] }
+  // =====================================================================
+  function cercles(zone, cfg, ctx) {
+    var etat = Store.get(cfg.cle, { etiquettes: [] }); // [{ texte, dans: [ids] }]
+    function sauver() { Store.set(cfg.cle, etat); }
+    var NS = "http://www.w3.org/2000/svg";
+    function schema() {
+      var svg = document.createElementNS(NS, "svg");
+      svg.setAttribute("viewBox", "0 0 320 230"); svg.setAttribute("class", "roue"); svg.setAttribute("role", "img");
+      svg.setAttribute("aria-label", "Quatre cercles qui se chevauchent : " + cfg.cercles.map(function (c) { return c.nom; }).join(", ") + ". Au centre : ma piste.");
+      var pos = [[118, 88], [202, 88], [118, 142], [202, 142]], couleurs = ["#F1EBFB", "#E3F4F2", "#FCEFE2", "#E8F0FA"], traits = ["#5B30AA", "#0D6B64", "#964600", "#1D58A3"];
+      var lab = [[60, 36], [260, 36], [60, 206], [260, 206]];
+      cfg.cercles.forEach(function (c, i) {
+        var e = document.createElementNS(NS, "circle");
+        e.setAttribute("cx", pos[i][0]); e.setAttribute("cy", pos[i][1]); e.setAttribute("r", 70);
+        e.setAttribute("fill", couleurs[i]); e.setAttribute("fill-opacity", ".75"); e.setAttribute("stroke", traits[i]); e.setAttribute("stroke-width", "2");
+        svg.appendChild(e);
+      });
+      cfg.cercles.forEach(function (c, i) {
+        var t = document.createElementNS(NS, "text");
+        t.setAttribute("x", lab[i][0]); t.setAttribute("y", lab[i][1]); t.setAttribute("text-anchor", "middle");
+        t.setAttribute("font-size", "11"); t.setAttribute("font-weight", "700"); t.setAttribute("fill", traits[i]);
+        t.setAttribute("font-family", "Atkinson Hyperlegible, system-ui, sans-serif");
+        t.textContent = c.nom; svg.appendChild(t);
+      });
+      var centre = document.createElementNS(NS, "text");
+      centre.setAttribute("x", 160); centre.setAttribute("y", 119); centre.setAttribute("text-anchor", "middle");
+      centre.setAttribute("font-size", "12"); centre.setAttribute("font-weight", "700"); centre.setAttribute("fill", "#1B1F24");
+      centre.setAttribute("font-family", "Atkinson Hyperlegible, system-ui, sans-serif"); centre.textContent = "Ma piste";
+      svg.appendChild(centre);
+      return h("figure", { class: "roue-fig", style: "max-width:420px;align-self:center;width:100%" }, svg);
+    }
+    function rendu() {
+      vider(zone);
+      zone.appendChild(schema());
+      zone.appendChild(h("dl", { class: "pile", style: "margin:0;gap:6px" }, cfg.cercles.map(function (c) {
+        return h("div", null, h("dt", { style: "font-weight:700", text: c.nom }), h("dd", { class: "texte-doux", style: "margin:0", text: c.question }));
+      })));
+      // Ajouter une étiquette
+      var champ = h("input", { type: "text", id: cfg.cle + "-ajout", maxlength: "60", placeholder: "Ex. : réparer, aider les autres, la sécurité, l'informatique…" });
+      zone.appendChild(h("form", { class: "pile", on: { submit: function (e) {
+        e.preventDefault(); var v = champ.value.trim(); if (!v) return;
+        if (!etat.etiquettes.some(function (x) { return x.texte.toLowerCase() === v.toLowerCase(); })) etat.etiquettes.push({ texte: v, dans: [] });
+        sauver(); rendu();
+        var nouveau = document.getElementById(cfg.cle + "-ajout"); if (nouveau) nouveau.focus();
+      } } },
+        h("label", { class: "champ", for: cfg.cle + "-ajout" }, h("span", { text: "Ajouter une étiquette" }), champ),
+        h("div", { class: "ligne" },
+          h("button", { class: "btn pilier petit", type: "submit", text: "Ajouter" }),
+          cfg.importer ? h("button", { class: "btn secondaire petit", type: "button", on: { click: importer } }, "Reprendre mes valeurs, qualités et réussites") : null)));
+      // Les étiquettes et leurs cercles
+      if (!etat.etiquettes.length) zone.appendChild(h("p", { class: "vide", text: "Ajoute des étiquettes, puis place chacune dans un ou plusieurs cercles." }));
+      etat.etiquettes.forEach(function (et, k) {
+        zone.appendChild(h("div", { class: "carte pile", style: "padding:12px 14px;gap:8px" },
+          h("div", { class: "entre" }, h("strong", { text: et.texte }),
+            h("button", { class: "btn danger petit", type: "button", "aria-label": "Retirer l'étiquette " + et.texte, on: { click: function () { etat.etiquettes.splice(k, 1); sauver(); rendu(); } } }, icone("poubelle"))),
+          h("div", { class: "ligne", style: "gap:6px", role: "group", "aria-label": "Cercles pour " + et.texte }, cfg.cercles.map(function (c) {
+            var dedans = et.dans.indexOf(c.id) >= 0;
+            return h("button", { class: "puce" + (dedans ? " active" : ""), type: "button", "aria-pressed": dedans ? "true" : "false", text: c.nom, on: { click: function () {
+              var i = et.dans.indexOf(c.id); if (i >= 0) et.dans.splice(i, 1); else et.dans.push(c.id);
+              sauver(); rendu();
+            } } });
+          }))));
+      });
+      // Bilan
+      var centre = etat.etiquettes.filter(function (e) { return e.dans.length >= 3; });
+      var deux = etat.etiquettes.filter(function (e) { return e.dans.length === 2; });
+      if (centre.length || deux.length) {
+        zone.appendChild(h("div", { class: "retour-ok", "aria-live": "polite" },
+          centre.length ? h("p", null, h("strong", { text: "Au centre (3 cercles ou plus) : " }), centre.map(function (e) { return e.texte; }).join(", ") + ". C'est là que se trouve ta piste.") : null,
+          deux.length ? h("p", { style: centre.length ? "margin-top:6px" : null }, h("strong", { text: "Entre deux cercles : " }), deux.map(function (e) { return e.texte; }).join(", ") + ".") : null));
+        if (centre.length && ctx && ctx.fini) ctx.fini();
+      }
+      zone.appendChild(h("button", { class: "btn secondaire petit", type: "button", style: "align-self:flex-start", on: { click: imprimer } }, icone("imprime"), "Imprimer ou PDF"));
+    }
+    function importer() {
+      var ajouts = 0;
+      (cfg.importer || []).forEach(function (src) {
+        var d = Store.get(src.cle, null); if (!d) return;
+        var mots = src.type === "choix" ? (d.choix || []) : (Array.isArray(d) ? d.map(function (x) { return x[src.champ]; }) : []);
+        mots.filter(Boolean).forEach(function (m) {
+          if (!etat.etiquettes.some(function (x) { return x.texte.toLowerCase() === m.toLowerCase(); })) { etat.etiquettes.push({ texte: m, dans: src.cercle ? [src.cercle] : [] }); ajouts++; }
+        });
+      });
+      sauver(); rendu();
+      CapApp.toast(ajouts ? ajouts + " étiquette(s) reprise(s) de tes séances." : "Rien à reprendre : remplis d'abord tes valeurs, qualités ou réussites.");
+    }
+    function imprimer() {
+      var bloc = h("div");
+      bloc.appendChild(schema());
+      cfg.cercles.forEach(function (c) {
+        var dans = etat.etiquettes.filter(function (e) { return e.dans.indexOf(c.id) >= 0; }).map(function (e) { return e.texte; });
+        bloc.appendChild(h("h2", { style: "font-size:15px;margin-top:12px", text: c.nom }));
+        bloc.appendChild(h("p", { text: dans.length ? dans.join(", ") : "…" }));
+      });
+      var centre = etat.etiquettes.filter(function (e) { return e.dans.length >= 3; }).map(function (e) { return e.texte; });
+      bloc.appendChild(h("h2", { style: "font-size:15px;margin-top:12px", text: "Ma piste (au centre)" }));
+      bloc.appendChild(h("p", { text: centre.length ? centre.join(", ") : "…" }));
+      CapApp.imprimer(cfg.titreDoc || "Mon projet en cercles", bloc);
+    }
+    rendu();
+  }
+
   window.h = h;
   window.vider = vider;
   window.icone = icone;
   window.Moteurs = { cartes: cartes, choisir: choisir, scenario: scenario, quiz: quiz, carnet: carnet, liste: liste, coherence: coherence, jauges: jauges,
-    defi: defi, binome: binome, reformuler: reformuler };
+    defi: defi, binome: binome, reformuler: reformuler, tas: tas, debat: debat, repertoire: repertoire, cercles: cercles };
 })();

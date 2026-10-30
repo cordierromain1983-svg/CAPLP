@@ -18,6 +18,13 @@ window.CAP_CONFIG = {
     { role: "Ton professeur principal", ou: "En classe ou par la messagerie de l'ENT", quand: "" }
   ],
 
+  // Initiatives d'engagement proches du lycée (CPS Terminale, séance 3).
+  // Thèmes possibles : "Solidarité", "Environnement", "Sport", "Sécurité civile", "Culture", "Vie du lycée".
+  // Exemple : { nom: "Banque alimentaire de [ville]", theme: "Solidarité", age: "Dès 16 ans", description: "Collectes dans les magasins", url: "https://…" }
+  engagements: [
+    { nom: "Conseil de la vie lycéenne (CVL)", theme: "Vie du lycée", age: "Tous les lycéens", description: "Se présenter aux élections et porter les projets des élèves. Renseigne-toi auprès du CPE.", url: "" }
+  ],
+
   // Numéros nationaux, gratuits.
   numeros: [
     { numero: "3018", titre: "Harcèlement et cyberharcèlement",
