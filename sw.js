@@ -1,6 +1,6 @@
 /* Service worker : permet d'utiliser Cap'Autonomie hors ligne une fois ouvert une première fois.
    Après chaque modification des fichiers, augmentez le numéro de VERSION pour forcer la mise à jour. */
-var VERSION = "cap-v2";
+var VERSION = "cap-v3";
 var FICHIERS = [
   "./", "index.html", "css/app.css", "icone.svg", "manifest.webmanifest",
   "js/config.js", "js/store.js", "js/engines.js", "js/fiches.js", "js/app.js",
@@ -20,8 +20,10 @@ self.addEventListener("activate", function (e) {
 // Réseau d'abord (pour avoir les dernières mises à jour), cache si hors ligne.
 self.addEventListener("fetch", function (e) {
   if (e.request.method !== "GET") return;
+  var memeSite = new URL(e.request.url).origin === location.origin;
+  // « no-cache » : on vérifie toujours auprès du serveur, pour voir les mises à jour tout de suite.
   e.respondWith(
-    fetch(e.request).then(function (rep) {
+    fetch(memeSite ? new Request(e.request, { cache: "no-cache" }) : e.request).then(function (rep) {
       if (rep && rep.ok && new URL(e.request.url).origin === location.origin) {
         var copie = rep.clone();
         caches.open(VERSION).then(function (c) { c.put(e.request, copie); });
