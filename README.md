@@ -9,7 +9,9 @@ Application pédagogique pour le lycée professionnel : sept piliers (CPS, EVARS
 - **Aucun compte, aucune donnée envoyée.** Tout ce que l'élève écrit reste dans le navigateur de son appareil (stockage local). Il peut télécharger une sauvegarde, la restaurer ou tout effacer depuis « Mon espace ».
 - **Fonctionne hors ligne** une fois ouverte une première fois (sur un site en https).
 - **Accessible** : police Atkinson Hyperlegible, gros boutons, navigation au clavier.
-- Chaque séance contient : « À quoi ça me sert ? », une ou plusieurs activités, « Ce qu'il faut retenir », « Ce que je garde », « Je vérifie ce que j'ai compris » et la fiche de l'adulte (déroulé de 45 minutes).
+- Chaque séance contient : « La dernière fois » (lien avec la séance précédente), « À quoi ça me sert ? », une ou plusieurs activités, « Ce qu'il faut retenir », une fiche ressource imprimable (ex. la roue des émotions), « Ce que je garde », « Je vérifie ce que j'ai compris » et « Pour aller plus loin ».
+- Les fiches ressources sont aussi rassemblées dans « Ma boîte à outils ».
+- Le déroulé de séance destiné à l'adulte est conservé dans les données (`adulte`) mais n'est plus affiché aux élèves : il sera réservé à l'espace enseignant.
 
 ## Mettre en ligne avec GitHub Pages
 

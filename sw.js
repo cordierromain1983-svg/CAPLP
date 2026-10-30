@@ -1,9 +1,9 @@
 /* Service worker : permet d'utiliser Cap'Autonomie hors ligne une fois ouvert une première fois.
    Après chaque modification des fichiers, augmentez le numéro de VERSION pour forcer la mise à jour. */
-var VERSION = "cap-v1";
+var VERSION = "cap-v2";
 var FICHIERS = [
   "./", "index.html", "css/app.css", "icone.svg", "manifest.webmanifest",
-  "js/config.js", "js/store.js", "js/engines.js", "js/app.js",
+  "js/config.js", "js/store.js", "js/engines.js", "js/fiches.js", "js/app.js",
   "data/piliers.js", "data/cps-seconde.js"
 ];
 

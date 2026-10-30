@@ -112,7 +112,7 @@
           { id: "colere", label: "Colère", aide: "agacé, énervé, furieux", placeholder: "Mes mots, où je la sens…" },
           { id: "peur", label: "Peur", aide: "inquiet, effrayé, terrifié", placeholder: "Mes mots, où je la sens…" },
           { id: "degout", label: "Dégoût", aide: "gêné, écœuré, révulsé", placeholder: "Mes mots, où je la sens…" },
-          { id: "surprise", label: "Surprise", aide: "étonné, stupéfait, choqué", placeholder: "Mes mots, où je la sens…" }
+          { id: "surprise", label: "Surprise", aide: "étonné, surpris, sidéré", placeholder: "Mes mots, où je la sens…" }
         ]
       }
     }],
@@ -555,4 +555,181 @@
       vigilance: "Si un élève évoque une situation réelle de harcèlement ou de pression, on ne la traite pas devant la classe : on en parle à part et on informe le CPE ou l'infirmière."
     }
   });
+
+  // ===================================================================
+  // COMPLÉMENTS DE SÉANCE
+  //   rappel    : lien avec la séance précédente (affiché en tout début)
+  //   ressource : la fiche à garder et à imprimer
+  //   plusLoin  : ressources fiables pour aller plus loin (vérifiées en octobre 2026)
+  // ===================================================================
+  var FSJ = "Fil Santé Jeunes";
+  var COMPLEMENTS = {
+    "cps-2nde-1": {
+      rappel: { texte: "Bienvenue dans le pilier CPS. Cette année, on part de toi : tes émotions, tes besoins, tes forces, ton stress et ta façon de t'affirmer. On commence par ce que tu ressens." },
+      ressource: {
+        titre: "La roue des émotions",
+        intro: "Garde cette fiche : elle t'aide à trouver le mot juste quand tu veux dire ce que tu ressens.",
+        blocs: [
+          { type: "roue", titre: "Les 6 émotions et leurs nuances",
+            emotions: [
+              { nom: "Joie", couleur: "#F6D77A", clair: "#FBE7A8", nuances: ["Content", "Joyeux", "Euphorique"] },
+              { nom: "Surprise", couleur: "#F7B97F", clair: "#FBD3AC", nuances: ["Étonné", "Surpris", "Sidéré"] },
+              { nom: "Peur", couleur: "#C7B3EA", clair: "#DDD0F3", nuances: ["Inquiet", "Effrayé", "Terrifié"] },
+              { nom: "Tristesse", couleur: "#A9C7EE", clair: "#CBDDF6", nuances: ["Déçu", "Triste", "Effondré"] },
+              { nom: "Dégoût", couleur: "#AFD8A8", clair: "#CFE8CA", nuances: ["Gêné", "Écœuré", "Révulsé"] },
+              { nom: "Colère", couleur: "#F0A79D", clair: "#F7C9C2", nuances: ["Agacé", "Énervé", "Furieux"] }
+            ] },
+          { type: "tableau", titre: "Lexique : des mots pour le dire",
+            colonnes: ["Émotion", "Faible", "Moyenne", "Forte", "Dans mon corps", "À quoi elle sert"],
+            lignes: [
+              ["Joie", "content, satisfait", "joyeux, fier", "enthousiaste, euphorique", "légèreté, énergie, sourire", "Me montre ce qui est bon pour moi"],
+              ["Surprise", "étonné, intrigué", "surpris, stupéfait", "sidéré, abasourdi", "sursaut, souffle coupé", "Me rend attentif à ce qui est nouveau"],
+              ["Peur", "inquiet, tendu", "effrayé, anxieux", "terrifié, paniqué", "gorge serrée, mains moites, cœur rapide", "Me protège d'un danger"],
+              ["Tristesse", "déçu, nostalgique", "triste, abattu", "effondré, désespéré", "boule dans la gorge, larmes, fatigue", "Signale une perte, invite à chercher du réconfort"],
+              ["Dégoût", "gêné, mal à l'aise", "écœuré, dégoûté", "révulsé, horrifié", "nausée, envie de reculer", "M'éloigne de ce qui est mauvais pour moi"],
+              ["Colère", "agacé, irrité", "énervé, fâché", "furieux, enragé", "chaleur, poings serrés, mâchoire crispée", "Signale une injustice ou une limite franchie"]
+            ] },
+          { type: "liste", titre: "Des phrases pour commencer",
+            items: [
+              "Là, je me sens… parce que…",
+              "Je suis plutôt agacé que vraiment en colère.",
+              "Quand…, je ressens… dans mon corps.",
+              "J'ai besoin d'un moment pour me calmer, on en reparle après ?"
+            ] }
+        ]
+      },
+      plusLoin: [
+        { titre: "Émotions : à quoi ça sert ?", source: FSJ, url: "https://www.filsantejeunes.com/les-emotions-a-quoi-ca-sert-21334", description: "Pourquoi même les émotions désagréables sont utiles." },
+        { titre: "Tout le temps en colère, pourquoi ?", source: FSJ, url: "https://www.filsantejeunes.com/quand-la-colere-se-cache-derriere-5062", description: "Ce que la colère peut cacher, et comment la canaliser." }
+      ]
+    },
+
+    "cps-2nde-2": {
+      rappel: { seance: "cps-2nde-1", texte: "La dernière fois, tu as appris à nommer tes émotions et à repérer leurs signaux dans ton corps. Aujourd'hui, on cherche ce qui se cache derrière une émotion forte : souvent, un besoin." },
+      ressource: {
+        titre: "Mes besoins et mes réactions",
+        intro: "Quand tu réagis fort, cette fiche t'aide à comprendre pourquoi, et quoi faire.",
+        blocs: [
+          { type: "etapes", titre: "La chaîne d'une réaction", items: ["La situation", "L'émotion que je ressens", "Le besoin qui n'est pas respecté", "Ma réaction"] },
+          { type: "tableau", titre: "Les familles de besoins",
+            colonnes: ["Besoin", "Quand il manque, je peux ressentir…", "Ce qui peut m'aider"],
+            lignes: [
+              ["Repos", "irritation, tristesse, tout m'énerve", "dormir plus, faire une pause, prévenir que je suis à cran"],
+              ["Sécurité", "peur, inquiétude", "demander une formation ou des explications, en parler à un adulte"],
+              ["Respect", "colère, humiliation", "dire calmement ce qui m'a blessé, après coup et pas devant tout le monde"],
+              ["Reconnaissance", "tristesse, découragement", "demander un retour sur mon travail, valoriser moi-même mes réussites"],
+              ["Appartenance", "tristesse, sentiment d'être à l'écart", "aller vers une personne de confiance, rejoindre un groupe, un club"],
+              ["Autonomie", "colère, frustration", "demander à être consulté, proposer une solution"],
+              ["Comprendre", "inquiétude, agacement", "poser des questions, demander pourquoi une décision a été prise"]
+            ] },
+          { type: "liste", titre: "Mes questions quand je réagis fort",
+            items: ["Qu'est-ce qui s'est passé, exactement ?", "Qu'est-ce que je ressens ? (la roue des émotions peut m'aider)", "De quoi est-ce que j'avais besoin ?", "Qu'est-ce que je pourrais faire, ou demander, la prochaine fois ?"] },
+          { type: "texte", titre: "À savoir", texte: "Les besoins n'ont pas de classement : aucun n'est plus important que les autres. Ils sont différents selon les personnes et les moments." }
+        ]
+      },
+      plusLoin: [
+        { titre: "Combien doit-on dormir ?", source: FSJ, url: "https://www.filsantejeunes.com/combien-doit-on-dormir-18602", description: "Les heures de sommeil conseillées et les bonnes habitudes." },
+        { titre: "Être fatigué", source: FSJ, url: "https://www.filsantejeunes.com/etre-fatigue-6838", description: "Comprendre la fatigue et ce qu'elle change dans nos réactions." }
+      ]
+    },
+
+    "cps-2nde-3": {
+      rappel: { seance: "cps-2nde-2", texte: "La dernière fois, tu as relié tes réactions à des besoins, comme le respect ou la reconnaissance. Être reconnu par les autres commence par se reconnaître soi-même : aujourd'hui, on cherche tes qualités et tes réussites." },
+      ressource: {
+        titre: "Mes qualités, preuves à l'appui",
+        intro: "Une fiche pour trouver tes qualités et les présenter, dans un CV ou un entretien de stage.",
+        blocs: [
+          { type: "tableau", titre: "Deux notions à ne pas confondre",
+            colonnes: ["Notion", "Ce que c'est", "Exemple"],
+            lignes: [
+              ["Estime de soi", "La valeur que je m'accorde", "« Je mérite d'être respecté, même quand je rate un contrôle. »"],
+              ["Confiance en soi", "Ce que je me sens capable de faire", "« Je me sens capable d'appeler une entreprise pour un stage. »"]
+            ] },
+          { type: "etapes", titre: "La formule pour prouver une qualité", items: ["J'ai… (une réussite concrète)", "ce qui montre que je suis… (la qualité)"] },
+          { type: "texte", titre: "Exemple", texte: "J'ai entraîné l'équipe de foot des moins de 10 ans toute l'année, ce qui montre que je suis patient et pédagogue." },
+          { type: "liste", titre: "Où chercher mes réussites ?",
+            items: ["Le sport ou un loisir où j'ai progressé", "La famille : garder des frères et sœurs, aider aux travaux", "Un petit job, un coup de main, du bénévolat", "Le stage ou l'atelier : une tâche bien faite, un compliment reçu", "Une difficulté que j'ai surmontée"] },
+          { type: "tableau", titre: "Lexique des qualités",
+            colonnes: ["Qualité", "Ce que ça veut dire"],
+            lignes: [
+              ["Persévérant(e)", "Je ne lâche pas facilement"], ["Fiable", "On peut compter sur moi"], ["Débrouillard(e)", "Je trouve des solutions"],
+              ["Ponctuel(le)", "Je suis à l'heure"], ["Minutieux(se)", "Je fais attention aux détails"], ["Autonome", "Je sais avancer seul(e)"],
+              ["À l'écoute", "Les autres se confient à moi"], ["Pédagogue", "J'explique bien aux autres"], ["Serviable", "J'aide sans qu'on me le demande"],
+              ["Calme", "Je garde mon sang-froid"], ["Curieux(se)", "J'aime comprendre comment ça marche"], ["Responsable", "J'assume ce que je fais"]
+            ] }
+        ]
+      },
+      plusLoin: [
+        { titre: "La confiance en soi", source: FSJ, url: "https://www.filsantejeunes.com/la-confiance-en-soi-6350", description: "Comment la confiance se construit, et des pistes pour la renforcer." },
+        { titre: "Les 10 questions à se poser avant de rédiger son CV", source: "Onisep", url: "https://www.onisep.fr/vers-l-emploi/recherche-d-emploi/les-10-questions-a-se-poser-avant-de-rediger-son-cv", description: "Pour transformer tes qualités en arguments sur un CV." }
+      ]
+    },
+
+    "cps-2nde-4": {
+      rappel: { seance: "cps-2nde-3", texte: "La dernière fois, tu as listé tes qualités et tes réussites. Mais même quand on se sait capable, le stress peut tout bloquer avant un oral ou un appel. Aujourd'hui, on apprend à le faire redescendre." },
+      ressource: {
+        titre: "Mon stress sous contrôle",
+        intro: "Une fiche à garder pour les jours d'examen, d'oral ou de stage.",
+        blocs: [
+          { type: "tableau", titre: "Le bon niveau de stress",
+            colonnes: ["Niveau", "Ce qui se passe", "Ce que je peux faire"],
+            lignes: [
+              ["Trop peu", "Je m'ennuie, je ne me mobilise pas", "Me fixer un petit objectif, une échéance"],
+              ["Juste ce qu'il faut", "Je suis concentré et motivé", "Continuer : c'est le bon niveau"],
+              ["Trop", "Je bloque, j'oublie, je panique", "Respirer, découper la tâche, en parler"]
+            ] },
+          { type: "tableau", titre: "Les signaux du stress",
+            colonnes: ["Où", "Exemples"],
+            lignes: [
+              ["Dans mon corps", "cœur rapide, souffle court, mains moites, mal au ventre, muscles tendus"],
+              ["Dans ma tête", "« je vais rater », trous de mémoire, pensées qui tournent en boucle"],
+              ["Dans mon comportement", "je m'énerve vite, je repousse, je n'arrive pas à dormir"]
+            ] },
+          { type: "etapes", titre: "La cohérence cardiaque, mode d'emploi",
+            items: ["Je m'assois, dos droit, pieds au sol", "J'inspire par le nez pendant 5 secondes", "J'expire doucement par la bouche pendant 5 secondes", "Je continue 5 minutes : 6 respirations par minute"] },
+          { type: "liste", titre: "D'autres techniques qui marchent",
+            items: ["Bouger : marcher, courir, m'étirer", "Écrire ce qui me stresse pour le sortir de ma tête", "Parler à quelqu'un de confiance", "Découper une grosse tâche en petites étapes", "Préparer la veille : tenue, trajet, fiche", "Dormir suffisamment avant un grand jour"] },
+          { type: "texte", titre: "Quand en parler ?", texte: "Si le stress t'empêche de dormir, de manger ou de venir au lycée pendant plusieurs jours, parles-en à un adulte : infirmière, CPE, professeur principal. Tu peux aussi appeler Fil Santé Jeunes au 0 800 235 236 (gratuit et anonyme)." }
+        ]
+      },
+      plusLoin: [
+        { titre: "Se détendre : les techniques", source: FSJ, url: "https://www.filsantejeunes.com/se-detendre-les-techniques-5818", description: "Respiration, relaxation, activités : plusieurs façons de se détendre." },
+        { titre: "Le stress des épreuves orales", source: FSJ, url: "https://www.filsantejeunes.com/le-stress-des-epreuves-orales-5306", description: "Comprendre le trac et le maîtriser avant, pendant et après un oral." }
+      ]
+    },
+
+    "cps-2nde-5": {
+      rappel: { seance: "cps-2nde-4", texte: "La dernière fois, tu as appris à faire redescendre ton stress. Un esprit plus calme aide à dire les choses clairement. Aujourd'hui, on apprend à dire non et à exprimer un désaccord sans blesser." },
+      ressource: {
+        titre: "M'affirmer sans m'opposer",
+        intro: "Une fiche avec la méthode et des phrases toutes prêtes.",
+        blocs: [
+          { type: "tableau", titre: "Les trois attitudes",
+            colonnes: ["Attitude", "Ce que je fais", "Exemple"],
+            lignes: [
+              ["Passive", "Je m'efface, je dis oui alors que je pense non", "« Bon… d'accord. »"],
+              ["Agressive", "J'attaque la personne, j'écrase l'autre", "« T'es lourd, achète-toi le tien ! »"],
+              ["Affirmée", "Je respecte l'autre et moi, je propose une solution", "« Non, j'en ai besoin, mais je te le prête après. »"]
+            ] },
+          { type: "etapes", titre: "La méthode en 3 temps", items: ["Je décris les faits, sans juger", "Je dis ce que je ressens ou ce dont j'ai besoin", "Je propose une solution"] },
+          { type: "tableau", titre: "Des phrases toutes prêtes",
+            colonnes: ["Pour…", "Je peux dire…"],
+            lignes: [
+              ["Dire non", "« Non, je ne peux pas. Par contre, je peux… »"],
+              ["Exprimer un désaccord", "« Je ne suis pas d'accord, parce que… On pourrait plutôt… ? »"],
+              ["Répondre si l'autre insiste", "« Je comprends, mais c'est non. » (je répète calmement)"],
+              ["Demander de l'aide", "« Je n'ai pas compris cette étape, vous pouvez me la remontrer ? »"],
+              ["Refuser de participer à une moquerie", "« Pour vous peut-être, pas pour lui. Moi, je ne partage pas. »"]
+            ] },
+          { type: "texte", titre: "À retenir", texte: "Dire non à une demande, ce n'est pas dire non à la personne. Si une situation dépasse ce que tu peux régler seul (menace, harcèlement), parles-en à un adulte : ce n'est pas « balancer », c'est protéger." }
+        ]
+      },
+      plusLoin: [
+        { titre: "Dire non", source: FSJ, url: "https://www.filsantejeunes.com/dire-non-5681", description: "Pourquoi c'est difficile de refuser, et comment poser ses limites." },
+        { titre: "Quand le groupe pense à ta place !", source: FSJ, url: "https://www.filsantejeunes.com/quand-le-groupe-pense-a-ta-place-6817", description: "Résister à la pression du groupe et ne pas rester témoin passif." },
+        { titre: "Harcèlement scolaire : que faire ?", source: "e-Enfance / 3018", url: "https://e-enfance.org/informer/harcelement-scolaire/", description: "Conseils pour les victimes et les témoins, et le numéro 3018." }
+      ]
+    }
+  };
+  S.forEach(function (s) { var c = COMPLEMENTS[s.id]; if (c) Object.keys(c).forEach(function (k) { s[k] = c[k]; }); });
 })();

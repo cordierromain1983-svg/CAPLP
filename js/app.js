@@ -166,6 +166,15 @@
 
     var corps = h("div", { class: "page" });
 
+    // Lien avec la séance précédente
+    if (s.rappel) {
+      var prec = s.rappel.seance ? seance(s.rappel.seance) : null;
+      corps.appendChild(h("section", { class: "rappel", "aria-label": prec ? "La dernière fois" : "Pour commencer l'année" },
+        h("span", { class: "etiquette", style: "color:" + p.couleur, text: prec ? "La dernière fois" : "On commence" }),
+        h("p", { text: s.rappel.texte }),
+        prec ? h("a", { class: "retour", href: "#/seance/" + prec.id, style: "color:" + p.couleur }, "Revoir la séance " + prec.num + " : " + prec.titre, icone("fleche")) : null));
+    }
+
     // À quoi ça me sert ?
     corps.appendChild(h("section", { class: "carte aqcms", "aria-labelledby": "aqcms" },
       h("h2", { id: "aqcms", class: "titre-bloc", text: "À quoi ça me sert ?" }),
@@ -190,6 +199,9 @@
       h("h2", { class: "titre-bloc", text: "Ce qu'il faut retenir" }),
       h("ul", { style: "margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px" }, s.retenir.map(function (r) { return h("li", { text: r }); }))));
 
+    // Ma fiche ressource (à imprimer)
+    if (s.ressource) corps.appendChild(sectionFiche(s));
+
     // Ce que je garde
     (s.traces || []).forEach(function (t, k) {
       corps.appendChild(section(t, "trace-" + k, function () { marquer(s.id, "trace"); }, "Ce que je garde"));
@@ -203,8 +215,23 @@
       Moteurs.quiz(zq, { id: s.id, questions: s.verifie }, { fini: function () { marquer(s.id, "verifie"); } });
     }
 
-    // Fiche de l'adulte
-    if (s.adulte) corps.appendChild(ficheAdulte(s));
+    // Pour aller plus loin
+    if (s.plusLoin && s.plusLoin.length) {
+      corps.appendChild(h("section", { class: "pile", "aria-labelledby": "loin" },
+        h("h2", { id: "loin", class: "titre-bloc", text: "Pour aller plus loin" }),
+        s.plusLoin.map(function (r) {
+          return h("a", { class: "lien-ext", href: r.url, target: "_blank", rel: "noopener" },
+            h("span", { class: "pile", style: "gap:2px;flex:1" },
+              h("span", { class: "t", text: r.titre }),
+              h("span", { class: "s", text: r.source + " · " + r.description })),
+            h("span", { class: "sr-only", text: "(s'ouvre dans un nouvel onglet)" }),
+            icone("fleche"));
+        }),
+        h("p", { class: "note", text: "Ces liens mènent vers des sites extérieurs : il faut une connexion internet." })));
+    }
+
+    // La fiche de l'adulte (s.adulte) n'est pas affichée ici :
+    // elle sera réservée à l'espace enseignant.
 
     corps.appendChild(barreAide());
     page.appendChild(corps);
@@ -220,6 +247,19 @@
       zone);
     Moteurs[a.moteur](zone, a.config, { fini: fini });
     return sec;
+  }
+  function sectionFiche(s) {
+    var r = s.ressource;
+    var contenu = Fiches.fiche(r);
+    return h("section", { class: "carte pile", "aria-labelledby": "fiche-" + s.id },
+      h("div", { class: "entre", style: "align-items:flex-start" },
+        h("div", { class: "pile", style: "gap:4px" },
+          h("span", { class: "etiquette", text: "Ma fiche à garder" }),
+          h("h2", { id: "fiche-" + s.id, class: "titre-bloc", text: r.titre }))),
+      contenu,
+      h("button", { class: "btn pilier", type: "button", style: "align-self:flex-start", on: { click: function () {
+        CapApp.imprimer(r.titre, Fiches.fiche(r));
+      } } }, icone("imprime"), "Imprimer ou enregistrer en PDF"));
   }
   function passerelles(s) {
     // Les liens entre piliers seront activés lors de la « passe de liens ».
@@ -272,6 +312,39 @@
       });
       page.appendChild(pile);
     });
+    // Les fiches ressources, regroupées par pilier
+    var fiches = SEANCES.filter(function (s) { return s.ressource; });
+    if (fiches.length) {
+      page.appendChild(h("h2", { class: "titre-bloc", text: "Mes fiches à imprimer" }));
+      var pf = h("div", { class: "pile" });
+      fiches.forEach(function (s) {
+        var p = pilier(s.pilier);
+        pf.appendChild(h("a", { class: "seance-lien", href: "#/fiche/" + s.id },
+          h("span", { class: "pile", style: "gap:2px;flex:1" },
+            h("span", { class: "t", text: s.ressource.titre }),
+            h("span", { class: "s", text: p.nom + " · " + nomNiveau(s.niveau) + " · Séance " + s.num })),
+          icone("fleche")));
+      });
+      page.appendChild(pf);
+    }
+    return page;
+  }
+  function pageFiche(sid) {
+    var s = seance(sid);
+    if (!s || !s.ressource) return pageIntrouvable();
+    var p = pilier(s.pilier);
+    couleurs(p);
+    var page = h("div");
+    page.appendChild(h("header", { class: "bandeau" },
+      lienRetour("#/outils", "Ma boîte à outils"),
+      h("span", { class: "surtitre", text: p.nom + " · " + nomNiveau(s.niveau) + " · Séance " + s.num }),
+      h("h1", { class: "titre-page", text: s.ressource.titre })));
+    var corps = h("div", { class: "page" });
+    corps.appendChild(h("div", { class: "carte pile" }, Fiches.fiche(s.ressource)));
+    corps.appendChild(h("div", { class: "ligne" },
+      h("button", { class: "btn pilier", type: "button", on: { click: function () { CapApp.imprimer(s.ressource.titre, Fiches.fiche(s.ressource)); } } }, icone("imprime"), "Imprimer ou enregistrer en PDF"),
+      h("a", { class: "btn secondaire", href: "#/seance/" + s.id }, "Revoir la séance")));
+    page.appendChild(corps);
     return page;
   }
   function pageOutil(oid) {
@@ -401,6 +474,7 @@
       case "seance": vue = pageSeance(parts[1]); break;
       case "outils": vue = pageOutils(); nav = "outils"; break;
       case "outil": vue = pageOutil(parts[1]); nav = "outils"; break;
+      case "fiche": vue = pageFiche(parts[1]); nav = "outils"; break;
       case "espace": vue = pageEspace(); nav = "espace"; break;
       case "aide": vue = pageAide(); nav = ""; break;
       default: vue = pageIntrouvable();
