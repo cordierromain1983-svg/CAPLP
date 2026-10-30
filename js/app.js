@@ -170,9 +170,9 @@
     if (s.rappel) {
       var prec = s.rappel.seance ? seance(s.rappel.seance) : null;
       corps.appendChild(h("section", { class: "rappel", "aria-label": prec ? "La dernière fois" : "Pour commencer l'année" },
-        h("span", { class: "etiquette", style: "color:" + p.couleur, text: prec ? "La dernière fois" : "On commence" }),
+        h("span", { class: "etiquette", style: "color:" + p.couleur, text: s.rappel.etiquette || (prec ? "La dernière fois" : "On commence") }),
         h("p", { text: s.rappel.texte }),
-        prec ? h("a", { class: "retour", href: "#/seance/" + prec.id, style: "color:" + p.couleur }, "Revoir la séance " + prec.num + " : " + prec.titre, icone("fleche")) : null));
+        prec ? h("a", { class: "retour", href: "#/seance/" + prec.id, style: "color:" + p.couleur }, "Revoir la séance " + prec.num + (prec.niveau !== s.niveau ? " de " + nomNiveau(prec.niveau) : "") + " : " + prec.titre, icone("fleche")) : null));
     }
 
     // À quoi ça me sert ?

@@ -606,8 +606,152 @@
     if (cfg.note) zone.appendChild(h("p", { class: "note", text: cfg.note }));
   }
 
+  // =====================================================================
+  // 9. DÉFI COLLABORATIF à informations réparties (fonctionne hors ligne)
+  //    Chaque élève du groupe choisit son numéro et ne voit que ses indices.
+  //    config : { contexte, joueurs: { "1": [...], "2": [...] }, question, options:[{texte, ok, retour}], bilan }
+  // =====================================================================
+  function defi(zone, cfg, ctx) {
+    var nums = Object.keys(cfg.joueurs);
+    function choix() {
+      vider(zone);
+      zone.appendChild(h("div", { class: "bulle contexte", text: cfg.contexte }));
+      zone.appendChild(h("p", { style: "font-weight:700", text: "Dans ton groupe, chacun choisit un numéro différent." }));
+      zone.appendChild(h("div", { class: "choix-grille" }, nums.map(function (n) {
+        return h("button", { class: "option", type: "button", on: { click: function () { joueur(n); } } }, "Je suis le joueur " + n);
+      })));
+      if (cfg.note) zone.appendChild(h("p", { class: "note", text: cfg.note }));
+    }
+    function joueur(n) {
+      vider(zone);
+      zone.appendChild(h("div", { class: "entre" },
+        h("button", { class: "retour", type: "button", style: "border:none;background:none;padding:0;cursor:pointer", on: { click: choix } }, icone("retour"), "Changer de numéro"),
+        h("span", { class: "badge affirme", text: "Joueur " + n })));
+      zone.appendChild(h("div", { class: "alerte", text: "Ne montre pas ton écran ! Lis tes indices à voix haute à ton groupe." }));
+      zone.appendChild(h("div", { class: "bulle contexte", text: cfg.contexte }));
+      zone.appendChild(h("h3", { class: "titre-bloc", text: "Tes indices" }));
+      zone.appendChild(h("ol", { class: "fiche-liste", style: "padding-left:22px" }, cfg.joueurs[n].map(function (x) { return h("li", { text: x }); })));
+      var retour = h("div", { "aria-live": "polite" });
+      var groupe = h("div", { class: "pile", role: "group", "aria-label": cfg.question });
+      cfg.options.forEach(function (o, j) {
+        var b = h("button", { class: "option", type: "button", on: { click: function () {
+          vider(retour);
+          if (!o.ok) { b.classList.add("faux"); retour.appendChild(h("div", { class: "retour-ko" }, h("strong", { text: "Non. " }), o.retour || "Rassemblez encore vos indices.")); return; }
+          Array.prototype.forEach.call(groupe.children, function (x) { x.disabled = true; });
+          b.classList.add("juste");
+          retour.appendChild(h("div", { class: "retour-ok" }, h("strong", { text: "Bravo, enquête résolue ! " }), o.retour || ""));
+          if (cfg.bilan) retour.appendChild(h("div", { class: "retour-info", style: "margin-top:8px" }, h("strong", { text: "À discuter en groupe : " }), cfg.bilan));
+          if (ctx && ctx.fini) ctx.fini();
+        } } }, h("span", { class: "lettre", text: LETTRES[j] }), h("span", { text: o.texte }));
+        groupe.appendChild(b);
+      });
+      zone.appendChild(h("h3", { class: "titre-bloc", text: cfg.question }));
+      zone.appendChild(h("p", { class: "note", text: "Ne répondez qu'une fois que tout le groupe est d'accord." }));
+      zone.appendChild(groupe);
+      zone.appendChild(retour);
+    }
+    choix();
+  }
+
+  // =====================================================================
+  // 10. MINUTEUR DE BINÔME : sujet tiré au sort, rôles, 3 minutes
+  // =====================================================================
+  function binome(zone, cfg, ctx) {
+    var duree = cfg.duree || 180, timer = null, t0 = 0, tour = 0, sujets = melanger(cfg.sujets), iSujet = 0;
+    var sujet = h("p", { class: "carte-jeu", style: "font-size:17px", tabindex: "-1" });
+    var roles = h("p", { class: "texte-doux" });
+    var temps = h("p", { class: "cc-temps", style: "text-align:center", text: fmt(duree) });
+    var bouton = h("button", { class: "btn pilier", type: "button", on: { click: function () { timer ? stop(false) : go(); } } }, "Lancer les 3 minutes");
+    var autre = h("button", { class: "btn secondaire", type: "button", on: { click: function () { iSujet = (iSujet + 1) % sujets.length; maj(); } } }, icone("relance"), "Autre sujet");
+    var suivant = h("button", { class: "btn secondaire", type: "button", on: { click: function () { tour++; iSujet = (iSujet + 1) % sujets.length; stop(false); maj(); } } }, "Changer de rôle");
+    var info = h("div", { "aria-live": "polite" });
+    function fmt(s) { return Math.floor(s / 60) + ":" + String(Math.floor(s % 60)).padStart(2, "0"); }
+    function maj() {
+      sujet.textContent = sujets[iSujet];
+      roles.textContent = tour % 2 === 0
+        ? "Élève A raconte. Élève B écoute sans couper, puis reformule à la fin."
+        : "On inverse : élève B raconte, élève A écoute puis reformule.";
+      temps.textContent = fmt(duree);
+    }
+    function go() {
+      t0 = Date.now(); bouton.textContent = "Arrêter"; vider(info);
+      timer = setInterval(function () {
+        var reste = Math.max(0, duree - (Date.now() - t0) / 1000);
+        temps.textContent = fmt(reste);
+        if (reste <= 0) stop(true);
+      }, 250);
+    }
+    function stop(fin) {
+      clearInterval(timer); timer = null; bouton.textContent = "Lancer les 3 minutes"; temps.textContent = fmt(duree);
+      if (fin) {
+        vider(info);
+        info.appendChild(h("div", { class: "retour-info" }, h("strong", { text: "Temps écoulé. " }), "À l'écouteur de reformuler : « Si j'ai bien compris… ». Puis changez de rôle."));
+        if (tour >= 1 && ctx && ctx.fini) ctx.fini();
+      }
+    }
+    zone.appendChild(h("span", { class: "etiquette", text: "Le sujet" }));
+    zone.appendChild(sujet);
+    zone.appendChild(roles);
+    zone.appendChild(temps);
+    zone.appendChild(h("div", { class: "ligne", style: "justify-content:center" }, bouton, autre, suivant));
+    zone.appendChild(info);
+    window.addEventListener("hashchange", function arret() { clearInterval(timer); window.removeEventListener("hashchange", arret); });
+    maj();
+  }
+
+  // =====================================================================
+  // 11. ATELIER DE REFORMULATION (message « Je ») avec repérage des mots qui accusent
+  //    config : { items:[{reproche, exemple}], champs:[{id,label,aide}], gabarit, alertes:[{motif, conseil}] }
+  // =====================================================================
+  function reformuler(zone, cfg, ctx) {
+    var i = 0;
+    function item() {
+      vider(zone);
+      if (i >= cfg.items.length) {
+        zone.appendChild(h("div", { class: "retour-ok" }, h("strong", { text: "Atelier terminé. " }), "Tu as transformé " + cfg.items.length + " reproches en messages qui expliquent sans accuser."));
+        zone.appendChild(h("button", { class: "btn secondaire", type: "button", on: { click: function () { i = 0; item(); } } }, icone("relance"), "Recommencer"));
+        if (ctx && ctx.fini) ctx.fini();
+        return;
+      }
+      var it = cfg.items[i];
+      zone.appendChild(h("span", { class: "etiquette", text: "Reproche " + (i + 1) + " sur " + cfg.items.length }));
+      zone.appendChild(h("div", { class: "bulle autre", style: "max-width:100%" }, h("span", { class: "qui", text: "Le reproche" }), it.reproche));
+      var champs = {};
+      cfg.champs.forEach(function (c) {
+        var id = "ref-" + i + "-" + c.id;
+        champs[c.id] = h("input", { type: "text", id: id, maxlength: "160", placeholder: c.placeholder || "" });
+        zone.appendChild(h("label", { class: "champ", for: id }, h("span", null, c.label, c.aide ? h("span", { class: "aide", text: " · " + c.aide }) : null), champs[c.id]));
+      });
+      var apercu = h("p", { class: "retour-info", "aria-live": "polite" });
+      var alertes = h("div", { "aria-live": "polite" });
+      function maj() {
+        var e = {}, tout = "";
+        Object.keys(champs).forEach(function (k) { e[k] = champs[k].value; tout += " " + champs[k].value; });
+        apercu.textContent = remplir(cfg.gabarit, e);
+        vider(alertes);
+        (cfg.alertes || []).forEach(function (a) {
+          if (new RegExp(a.motif, "i").test(tout)) alertes.appendChild(h("div", { class: "retour-ko", style: "margin-top:6px" }, h("strong", { text: "Attention : " }), a.conseil));
+        });
+      }
+      Object.keys(champs).forEach(function (k) { champs[k].addEventListener("input", maj); });
+      zone.appendChild(h("span", { class: "etiquette", text: "Mon message" }));
+      zone.appendChild(apercu);
+      zone.appendChild(alertes);
+      var exemple = h("div", { "aria-live": "polite" });
+      zone.appendChild(exemple);
+      zone.appendChild(h("div", { class: "ligne" },
+        h("button", { class: "btn secondaire petit", type: "button", on: { click: function () {
+          vider(exemple); exemple.appendChild(h("div", { class: "retour-ok" }, h("strong", { text: "Un exemple possible : " }), it.exemple));
+        } } }, "Voir un exemple"),
+        h("button", { class: "btn pilier petit", type: "button", on: { click: function () { i++; item(); } } }, i + 1 < cfg.items.length ? "Reproche suivant" : "Terminer", icone("fleche"))));
+      maj();
+    }
+    item();
+  }
+
   window.h = h;
   window.vider = vider;
   window.icone = icone;
-  window.Moteurs = { cartes: cartes, choisir: choisir, scenario: scenario, quiz: quiz, carnet: carnet, liste: liste, coherence: coherence, jauges: jauges };
+  window.Moteurs = { cartes: cartes, choisir: choisir, scenario: scenario, quiz: quiz, carnet: carnet, liste: liste, coherence: coherence, jauges: jauges,
+    defi: defi, binome: binome, reformuler: reformuler };
 })();
