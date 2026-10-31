@@ -371,7 +371,12 @@
         function majOrdre() {
           vider(ordre);
           choisis.forEach(function (m, r) { ordre.appendChild(h("li", { class: "ligne" }, h("span", { class: "ordre-rang", text: String(r + 1) }), m)); });
-          if (choisis.length === q.elements.length) {
+          if (choisis.length === q.elements.length && q.libre) {
+            // Ordre libre : pas de bonne réponse, on donne le message à retenir
+            vider(retour);
+            retour.appendChild(h("div", { class: "retour-info" }, h("strong", { text: "Il n'y a pas d'ordre unique. " }), q.explication || ""));
+            marquer(true, false);
+          } else if (choisis.length === q.elements.length) {
             var juste = choisis.join("|") === q.elements.join("|");
             vider(retour);
             retour.appendChild(h("div", { class: juste ? "retour-ok" : "retour-ko" }, h("strong", { text: juste ? "Juste. " : "Pas tout à fait. " }),
@@ -385,7 +390,7 @@
           } } });
           grille.appendChild(b);
         });
-        carte.appendChild(h("p", { class: "texte-doux", text: "Touche les étiquettes dans le bon ordre." }));
+        carte.appendChild(h("p", { class: "texte-doux", text: q.libre ? "Touche les étiquettes dans l'ordre qui te semble le plus courant." : "Touche les étiquettes dans le bon ordre." }));
         carte.appendChild(grille);
         carte.appendChild(ordre);
       }
@@ -982,9 +987,72 @@
     rendu();
   }
 
+  // =====================================================================
+  // 16. DÉCODEUR « RÉEL OU RETOUCHÉ ? » : un portrait dessiné (jamais une vraie personne)
+  //     auquel un curseur ajoute une à une cinq retouches.
+  //     config : { etapes: [{ nom, question, reponse }] } (5 étapes, dans l'ordre du dessin)
+  // =====================================================================
+  function retouche(zone, cfg, ctx) {
+    var NS = "http://www.w3.org/2000/svg";
+    function el(tag, attrs) { var e = document.createElementNS(NS, tag); Object.keys(attrs).forEach(function (k) { e.setAttribute(k, attrs[k]); }); return e; }
+    var svg = el("svg", { viewBox: "0 0 240 270", role: "img" });
+    svg.appendChild(el("rect", { x: 0, y: 0, width: 240, height: 270, rx: 18, fill: "#EEF1F5" }));
+    svg.appendChild(el("path", { d: "M50 120 Q48 40 120 36 Q192 40 190 120 L190 150 L50 150 Z", fill: "#5A3E2B" }));
+    svg.appendChild(el("rect", { x: 98, y: 200, width: 44, height: 40, fill: "#D9A982" }));
+    svg.appendChild(el("path", { d: "M40 270 Q60 225 120 228 Q180 225 200 270 Z", fill: "#5B7FB8" }));
+    var visage = el("ellipse", { cx: 120, cy: 140, rx: 66, ry: 82, fill: "#E2B48C" });
+    svg.appendChild(visage);
+    svg.appendChild(el("path", { d: "M56 110 Q70 60 120 62 Q170 60 184 110 Q160 84 120 86 Q80 84 56 110 Z", fill: "#5A3E2B" }));
+    var defauts = el("g", {});
+    [[88, 160, 3], [100, 172, 2.4], [150, 166, 2.8], [140, 178, 2], [160, 150, 2.2], [92, 146, 2]].forEach(function (p) {
+      defauts.appendChild(el("circle", { cx: p[0], cy: p[1], r: p[2], fill: "#B97E5A", opacity: .75 }));
+    });
+    defauts.appendChild(el("path", { d: "M86 138 Q96 144 106 138", stroke: "#C08A68", "stroke-width": 2, fill: "none", opacity: .8 }));
+    defauts.appendChild(el("path", { d: "M134 138 Q144 144 154 138", stroke: "#C08A68", "stroke-width": 2, fill: "none", opacity: .8 }));
+    svg.appendChild(defauts);
+    var yeux = [el("ellipse", { cx: 96, cy: 126, rx: 10, ry: 7, fill: "#FFFFFF" }), el("ellipse", { cx: 144, cy: 126, rx: 10, ry: 7, fill: "#FFFFFF" })];
+    var iris = [el("circle", { cx: 96, cy: 126, r: 5, fill: "#3B2A1E" }), el("circle", { cx: 144, cy: 126, r: 5, fill: "#3B2A1E" })];
+    yeux.concat(iris).forEach(function (e) { svg.appendChild(e); });
+    svg.appendChild(el("path", { d: "M84 112 Q96 106 108 112 M132 112 Q144 106 156 112", stroke: "#4A3324", "stroke-width": 3, fill: "none", "stroke-linecap": "round" }));
+    svg.appendChild(el("path", { d: "M120 132 L114 158 Q120 162 126 158", stroke: "#B9845F", "stroke-width": 2.5, fill: "none", "stroke-linecap": "round" }));
+    svg.appendChild(el("path", { d: "M100 178 Q120 196 140 178 Z", fill: "#9E4A43" }));
+    var dents = el("rect", { x: 106, y: 178, width: 28, height: 7, rx: 2, fill: "#E3D3A8" });
+    svg.appendChild(dents);
+    var halo = el("rect", { x: 0, y: 0, width: 240, height: 270, rx: 18, fill: "#FFF6E0", opacity: 0 });
+    svg.appendChild(halo);
+
+    var curseur = h("input", { type: "range", min: "0", max: String(cfg.etapes.length), value: "0", id: "retouche-curseur", step: "1" });
+    var etiquette = h("strong", { text: "0" });
+    var liste = h("ol", { class: "fiche-liste", style: "padding-left:22px" });
+    function maj() {
+      var n = +curseur.value;
+      etiquette.textContent = String(n);
+      defauts.setAttribute("opacity", n >= 1 ? 0 : 1);
+      visage.setAttribute("rx", n >= 2 ? 56 : 66);
+      visage.setAttribute("ry", n >= 2 ? 80 : 82);
+      yeux.forEach(function (e) { e.setAttribute("rx", n >= 3 ? 13 : 10); e.setAttribute("ry", n >= 3 ? 9.5 : 7); });
+      iris.forEach(function (e) { e.setAttribute("r", n >= 3 ? 6.5 : 5); });
+      dents.setAttribute("fill", n >= 4 ? "#FFFFFF" : "#E3D3A8");
+      halo.setAttribute("opacity", n >= 5 ? .18 : 0);
+      svg.style.filter = n >= 5 ? "brightness(1.08) saturate(1.35) contrast(.95)" : "none";
+      svg.setAttribute("aria-label", n === 0 ? "Portrait dessiné, sans retouche." : "Portrait dessiné avec " + n + " retouche(s) : " + cfg.etapes.slice(0, n).map(function (x) { return x.nom; }).join(", ") + ".");
+      vider(liste);
+      cfg.etapes.slice(0, n).forEach(function (x) {
+        liste.appendChild(h("li", null, h("strong", { text: x.nom + ". " }), x.question + " ", h("span", { class: "texte-doux", text: x.reponse })));
+      });
+      if (n === cfg.etapes.length && ctx && ctx.fini) ctx.fini();
+    }
+    curseur.addEventListener("input", maj);
+    zone.appendChild(h("figure", { class: "retouche-fig" }, svg));
+    zone.appendChild(h("label", { class: "champ", for: "retouche-curseur" }, h("span", null, "Nombre de retouches : ", etiquette, " sur " + cfg.etapes.length), curseur));
+    zone.appendChild(liste);
+    zone.appendChild(h("p", { class: "note", text: "Ce portrait est un dessin : aucune vraie personne n'est représentée." }));
+    maj();
+  }
+
   window.h = h;
   window.vider = vider;
   window.icone = icone;
   window.Moteurs = { cartes: cartes, choisir: choisir, scenario: scenario, quiz: quiz, carnet: carnet, liste: liste, coherence: coherence, jauges: jauges,
-    defi: defi, binome: binome, reformuler: reformuler, tas: tas, debat: debat, repertoire: repertoire, cercles: cercles };
+    defi: defi, binome: binome, reformuler: reformuler, tas: tas, debat: debat, repertoire: repertoire, cercles: cercles, retouche: retouche };
 })();

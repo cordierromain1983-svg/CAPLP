@@ -2,7 +2,7 @@
 
 Application pédagogique pour le lycée professionnel : sept piliers (CPS, EVARS, Cyber, Orientation, EDUCFI, Droits, E3D), une boîte à outils et un espace personnel.
 
-**Version actuelle : pilier CPS complet, de la Seconde à la Terminale (15 séances).** Les autres piliers et niveaux apparaissent comme « Bientôt ».
+**Version actuelle : piliers CPS (15 séances de 45 min) et EVARS (9 séances d'environ 1 h 50, en deux temps de 55 min), de la Seconde à la Terminale.** Les autres piliers et niveaux apparaissent comme « Bientôt ».
 
 ## Principes
 
@@ -31,6 +31,7 @@ Ouvrez **`js/config.js`** : c'est le seul fichier à modifier. Renseignez le nom
 | `data/cps-seconde.js` | Les 5 séances CPS de Seconde |
 | `data/cps-premiere.js` | Les 5 séances CPS de Première |
 | `data/cps-terminale.js` | Les 5 séances CPS de Terminale |
+| `data/evars-seconde.js`, `evars-premiere.js`, `evars-terminale.js` | Les 3 séances EVARS de chaque niveau (programme EVARS de février 2025) |
 | `js/engines.js` | Les moteurs d'activités réutilisables |
 | `js/app.js` | Les pages et la navigation |
 | `css/app.css` | L'apparence |
@@ -58,7 +59,10 @@ Pour ajouter un niveau ou un pilier, créez un fichier `data/<pilier>-<niveau>.j
 | `debat` | Débat mouvant : se placer avant puis après le débat, avec un point de repère |
 | `repertoire` | Liste filtrable par thème (carte des engagements), complétée par `js/config.js` |
 | `cercles` | Projet en quatre cercles, avec reprise des traces des séances précédentes |
+| `retouche` | Décodeur « Réel ou retouché ? » sur un portrait dessiné |
+
+Une séance peut être découpée en deux temps : champ `temps` de la séance (titres des deux temps) et champ `temps: 1` ou `temps: 2` sur chaque activité. Dans un quiz, une question `ordre` avec `libre: true` n'a pas de bonne réponse.
 
 ## Liens entre piliers
 
-Chaque séance a un champ `passerelles` (vide pour l'instant). Il sera rempli lors de la « passe de liens », quand d'autres piliers seront prêts ; les pastilles « Aussi dans : » apparaîtront alors automatiquement.
+Chaque séance a un champ `passerelles` : la liste des identifiants des séances d'autres piliers qui lui sont liées (par exemple `["cps-2nde-3"]`). Il suffit d'écrire le lien dans un sens : le lien retour s'affiche automatiquement. Les liens apparaissent en haut de la séance (pastilles « Aussi dans : ») et dans le bloc « Voir aussi dans… ». Les liens EVARS ↔ CPS sont déjà en place.

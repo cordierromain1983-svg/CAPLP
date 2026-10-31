@@ -297,6 +297,13 @@ table.fiche-table tr:last-child th, table.fiche-table tr:last-child td { border-
 .lien-ext .t { font-weight: 700; }
 .lien-ext .s { font-size: 13px; color: var(--doux); }
 
+/* ---------- Séances en deux temps ---------- */
+.bandeau-temps { display: flex; flex-direction: column; gap: 2px; padding-top: 10px; border-top: 2px solid var(--p-fond); }
+
+/* ---------- Décodeur d'image retouchée ---------- */
+.retouche-fig { margin: 0; display: flex; justify-content: center; }
+.retouche-fig svg { width: 220px; height: auto; transition: filter .4s; }
+
 /* ---------- Rappel de la séance précédente ---------- */
 .rappel { display: flex; flex-direction: column; gap: 8px; padding: 14px 16px; border-radius: 18px; background: var(--carte); border: 1.5px dashed var(--p); }
 

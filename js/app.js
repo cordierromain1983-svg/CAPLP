@@ -172,7 +172,7 @@
       corps.appendChild(h("section", { class: "rappel", "aria-label": prec ? "La dernière fois" : "Pour commencer l'année" },
         h("span", { class: "etiquette", style: "color:" + p.couleur, text: s.rappel.etiquette || (prec ? "La dernière fois" : "On commence") }),
         h("p", { text: s.rappel.texte }),
-        prec ? h("a", { class: "retour", href: "#/seance/" + prec.id, style: "color:" + p.couleur }, "Revoir la séance " + prec.num + (prec.niveau !== s.niveau ? " de " + nomNiveau(prec.niveau) : "") + " : " + prec.titre, icone("fleche")) : null));
+        prec ? h("a", { class: "retour", href: "#/seance/" + prec.id, style: "color:" + p.couleur }, "Revoir " + (prec.pilier !== s.pilier ? pilier(prec.pilier).nom + ", " : "") + "séance " + prec.num + (prec.niveau !== s.niveau || prec.pilier !== s.pilier ? " de " + nomNiveau(prec.niveau) : "") + " : " + prec.titre, icone("fleche")) : null));
     }
 
     // À quoi ça me sert ?
@@ -189,8 +189,15 @@
       h("h2", { class: "titre-bloc", text: "Pour commencer" }),
       h("div", { class: "bulle contexte", text: s.accroche })));
 
-    // Activités (une ou plusieurs)
+    // Activités (une ou plusieurs), regroupées par « temps » quand la séance en a deux
+    var tempsCourant = null;
     (s.activites || []).forEach(function (a, k) {
+      if (s.temps && a.temps && a.temps !== tempsCourant) {
+        tempsCourant = a.temps;
+        corps.appendChild(h("div", { class: "bandeau-temps" },
+          h("span", { class: "etiquette", style: "color:" + p.couleur, text: "Temps " + a.temps + " · 55 min" }),
+          h("h2", { class: "titre-bloc", text: s.temps[a.temps - 1] })));
+      }
       corps.appendChild(section(a, "act-" + k, function () { marquer(s.id, "activite"); }));
     });
 
@@ -213,6 +220,21 @@
       corps.appendChild(h("section", { class: "pile", "aria-labelledby": "verif" },
         h("h2", { id: "verif", class: "titre-bloc", text: "Je vérifie ce que j'ai compris" }), zq));
       Moteurs.quiz(zq, { id: s.id, questions: s.verifie }, { fini: function () { marquer(s.id, "verifie"); } });
+    }
+
+    // Voir aussi dans les autres piliers (liens réciproques)
+    var lies = liensDe(s);
+    if (lies.length) {
+      corps.appendChild(h("section", { class: "pile", "aria-labelledby": "voir-aussi" },
+        h("h2", { id: "voir-aussi", class: "titre-bloc", text: "Voir aussi dans…" }),
+        lies.map(function (x) {
+          var px = pilier(x.pilier);
+          return h("a", { class: "seance-lien", href: "#/seance/" + x.id, style: "background:" + px.fond + ";border-color:transparent" },
+            h("span", { class: "pile", style: "gap:2px;flex:1" },
+              h("span", { class: "s", style: "font-weight:700;color:" + px.couleur, text: px.nom + " · " + nomNiveau(x.niveau) + " · Séance " + x.num }),
+              h("span", { class: "t", text: x.titre })),
+            icone("fleche"));
+        })));
     }
 
     // Pour aller plus loin
@@ -261,12 +283,19 @@
         CapApp.imprimer(r.titre, Fiches.fiche(r));
       } } }, icone("imprime"), "Imprimer ou enregistrer en PDF"));
   }
+  // Liens entre séances de piliers différents. Il suffit de les écrire dans un sens
+  // (champ « passerelles » : liste d'identifiants de séances) : le lien retour est automatique.
+  function liensDe(s) {
+    var ids = (s.passerelles || []).slice();
+    SEANCES.forEach(function (x) { if ((x.passerelles || []).indexOf(s.id) >= 0 && ids.indexOf(x.id) < 0) ids.push(x.id); });
+    return ids.map(seance).filter(function (x) { return x && x.pilier !== s.pilier && pilier(x.pilier) && pilier(x.pilier).actif; });
+  }
   function passerelles(s) {
-    // Les liens entre piliers seront activés lors de la « passe de liens ».
-    var liens = (s.passerelles || []).filter(function (l) { var p = pilier(l.pilier); return p && p.actif; });
-    if (!liens.length) return null;
+    var lies = liensDe(s), vus = [];
+    lies.forEach(function (x) { if (vus.indexOf(x.pilier) < 0) vus.push(x.pilier); });
+    if (!vus.length) return null;
     return h("div", { class: "ligne", style: "gap:6px" }, h("span", { class: "etiquette", text: "Aussi dans :" }),
-      liens.map(function (l) { var p = pilier(l.pilier); return h("a", { class: "puce", href: l.href, style: "background:#fff;color:" + p.couleur + ";font-weight:700" }, h("span", { class: "point" }), p.nom); }));
+      vus.map(function (pid) { var p = pilier(pid); return h("a", { class: "puce", href: "#voir-aussi", style: "background:#fff;color:" + p.couleur + ";font-weight:700", on: { click: function (e) { e.preventDefault(); var c = document.getElementById("voir-aussi"); if (c) c.scrollIntoView({ behavior: "smooth" }); } } }, h("span", { class: "point" }), p.nom); }));
   }
   function ficheAdulte(s) {
     var tbody = h("tbody");
