@@ -263,13 +263,14 @@
       { type: "ouverte", enonce: "Cite deux signaux d'alerte dans une relation.", modele: "Surveiller le téléphone de l'autre, l'éloigner de ses amis, insister après un non, le dévaloriser." }
     ],
     plusLoin: [
+      { titre: "Roméo et Juliette, de Shakespeare (texte intégral)", source: "Projet Gutenberg", url: "https://www.gutenberg.org/ebooks/18143", description: "La pièce en français (traduction de François Guizot), libre de droits. La scène du bal est à l'acte I, scène 5." },
       { titre: "L'amour, c'est pas si simple !", source: FSJ, url: "https://www.filsantejeunes.com/quand-lamour-fait-mal-aie-6913", description: "Les émotions de l'amour, et le respect dans la relation." },
       { titre: "Vivre une rupture", source: FSJ, url: "https://www.filsantejeunes.com/vivre-une-rupture-5543", description: "Annoncer une rupture avec respect, et traverser le chagrin." }
     ],
     passerelles: ["cps-2nde-1", "cps-2nde-5", "cps-1re-4"],
     adulte: {
       deroule: [
-        ["Temps 1 · 0-15 min", "Accroche", "Découvre la scène du bal de Roméo et Juliette (acte I, scène 5), lue ou vue dans le film de Baz Luhrmann (1996, scène de l'aquarium). Est-ce réaliste ?", "Fait distinguer la fiction de la vie réelle : coup de foudre, mariage le lendemain, pression des familles. L'extrait filmé est diffusé dans le cadre de l'exception pédagogique."],
+        ["Temps 1 · 0-15 min", "Accroche", "Découvre la scène du bal de Roméo et Juliette (acte I, scène 5), lue ou vue dans le film de Baz Luhrmann (1996, scène de l'aquarium). Est-ce réaliste ?", "Fait distinguer la fiction de la vie réelle : coup de foudre, mariage le lendemain, pression des familles. Texte : traduction Guizot, libre de droits (Projet Gutenberg). Film : DVD du CDI ou de l'établissement, à diffuser en classe dans le cadre de l'exception pédagogique (le film existe aussi sur Disney+ ou en location, mais ces abonnements sont réservés à un usage privé)."],
         ["Temps 1 · 15-35 min", "Activité", "Remet dans l'ordre qu'il imagine les cartes des étapes d'une relation. Aucune correction.", "Fait émerger qu'il n'existe pas d'ordre unique et que chaque étape se fait à deux."],
         ["Temps 1 · 35-55 min", "Mise en commun", "Liste ce qui influence nos attentes : films, amis, famille, culture, réseaux.", "Rappelle que les images, y compris pornographiques, ne montrent pas la réalité d'une relation."],
         ["Temps 2 · 0-10 min", "Accroche", "Repère sur sa roue des émotions celles qu'on peut ressentir quand on est amoureux.", "Montre que toutes ces émotions sont normales."],
