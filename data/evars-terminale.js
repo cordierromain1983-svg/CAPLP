@@ -136,7 +136,7 @@
         ["Temps 1 · 10-25 min", "Activité", "Associe des situations à quatre mots : sentiment, désir, excitation, plaisir.", "Donne les définitions de façon simple et scientifique."],
         ["Temps 1 · 25-45 min", "Activité", "Répond au quiz « Idées reçues ».", "Déconstruit la pression de la performance."],
         ["Temps 1 · 45-55 min", "Mise en commun", "Définit la santé sexuelle avec ses mots.", "Donne la définition large : bien-être physique, affectif, mental et social."],
-        ["Temps 2 · 0-10 min", "Accroche", "Compare deux œuvres d'art classiques qui suggèrent l'amour ou le désir (par exemple Le Baiser de Rodin ou de Klimt).", "Introduit l'érotisme : suggérer, laisser place aux émotions."],
+        ["Temps 2 · 0-10 min", "Accroche", "Compare Le Baiser de Francesco Hayez (1859) et celui de Gustav Klimt (1908) ; en prolongement, Le Baiser de Constantin Brâncuși (1907-1908). Qu'est-ce qui est montré, qu'est-ce qui est suggéré, quelles émotions ?", "Introduit l'érotisme : suggérer, laisser place aux émotions et à l'imaginaire."],
         ["Temps 2 · 10-30 min", "Activité", "Classe des énoncés écrits : pornographie ou relation réelle.", "Aucune image. Rappelle que la pornographie est interdite aux mineurs."],
         ["Temps 2 · 30-45 min", "Activité", "Repère les lieux et sources fiables en santé sexuelle.", "Présente le centre de santé sexuelle le plus proche."],
         ["Temps 2 · 45-55 min", "Trace", "Remplit « Ma carte santé » et répond à « Je vérifie ».", "Rappelle la confidentialité des consultations."]

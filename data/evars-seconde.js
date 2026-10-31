@@ -159,7 +159,7 @@
       ou: "Quand quelqu'un me plaît, quand on me dit non, quand je veux mettre fin à une relation.",
       lie: "Ma roue des émotions (CPS Seconde, séance 1), dire non (CPS Seconde, séance 5)."
     },
-    accroche: "Pense à une scène de rencontre dans un film, une série, un roman ou une chanson. Qu'est-ce qui la rend romantique ? Est-ce que ça se passe comme ça dans la vraie vie ?",
+    accroche: "Roméo et Juliette, de Shakespeare. Au cours d'un bal masqué, Roméo aperçoit Juliette. Ils échangent quelques répliques, s'embrassent, puis découvrent que leurs familles sont ennemies. Le lendemain, ils se marient en secret. Qu'est-ce qui rend cette rencontre romantique ? Est-ce que ça se passe comme ça dans la vraie vie ?",
     temps: ["Les étapes d'une relation", "Comprendre l'autre, et se respecter"],
     activites: [{
       temps: 1, titre: "Les étapes d'une relation", moteur: "quiz",
@@ -269,7 +269,7 @@
     passerelles: ["cps-2nde-1", "cps-2nde-5", "cps-1re-4"],
     adulte: {
       deroule: [
-        ["Temps 1 · 0-15 min", "Accroche", "Regarde une scène de rencontre (film, série, roman ou chanson au choix de l'adulte). Est-ce réaliste ?", "Fait distinguer la fiction de la vie réelle. La scène est visionnée avant : rien d'explicite."],
+        ["Temps 1 · 0-15 min", "Accroche", "Découvre la scène du bal de Roméo et Juliette (acte I, scène 5), lue ou vue dans le film de Baz Luhrmann (1996, scène de l'aquarium). Est-ce réaliste ?", "Fait distinguer la fiction de la vie réelle : coup de foudre, mariage le lendemain, pression des familles. L'extrait filmé est diffusé dans le cadre de l'exception pédagogique."],
         ["Temps 1 · 15-35 min", "Activité", "Remet dans l'ordre qu'il imagine les cartes des étapes d'une relation. Aucune correction.", "Fait émerger qu'il n'existe pas d'ordre unique et que chaque étape se fait à deux."],
         ["Temps 1 · 35-55 min", "Mise en commun", "Liste ce qui influence nos attentes : films, amis, famille, culture, réseaux.", "Rappelle que les images, y compris pornographiques, ne montrent pas la réalité d'une relation."],
         ["Temps 2 · 0-10 min", "Accroche", "Repère sur sa roue des émotions celles qu'on peut ressentir quand on est amoureux.", "Montre que toutes ces émotions sont normales."],
