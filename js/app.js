@@ -189,6 +189,9 @@
       h("h2", { class: "titre-bloc", text: "Pour commencer" }),
       h("div", { class: "bulle contexte", text: s.accroche })));
 
+    // Œuvres d'art à observer (images du domaine public, affichées depuis Wikimedia Commons)
+    if (s.oeuvres && !s.oeuvres.temps) corps.appendChild(sectionOeuvres(s.oeuvres));
+
     // Activités (une ou plusieurs), regroupées par « temps » quand la séance en a deux
     var tempsCourant = null;
     (s.activites || []).forEach(function (a, k) {
@@ -197,6 +200,7 @@
         corps.appendChild(h("div", { class: "bandeau-temps" },
           h("span", { class: "etiquette", style: "color:" + p.couleur, text: "Temps " + a.temps + " · 55 min" }),
           h("h2", { class: "titre-bloc", text: s.temps[a.temps - 1] })));
+        if (s.oeuvres && s.oeuvres.temps === a.temps) corps.appendChild(sectionOeuvres(s.oeuvres));
       }
       corps.appendChild(section(a, "act-" + k, function () { marquer(s.id, "activite"); }));
     });
@@ -269,6 +273,28 @@
       zone);
     Moteurs[a.moteur](zone, a.config, { fini: fini });
     return sec;
+  }
+  function sectionOeuvres(o) {
+    return h("section", { class: "carte pile", "aria-labelledby": "oeuvres" },
+      h("div", { class: "pile", style: "gap:4px" },
+        h("span", { class: "etiquette", text: "Observer" }),
+        h("h2", { id: "oeuvres", class: "titre-bloc", text: o.titre })),
+      o.consigne ? h("p", { class: "texte-doux", text: o.consigne }) : null,
+      h("div", { class: "oeuvres" }, o.liste.map(function (x) {
+        var cartel = h("figcaption", { class: "pile", style: "gap:2px" },
+          h("span", { style: "font-weight:700", text: x.titre + ", " + x.auteur + " (" + x.date + ")" }),
+          x.lieu ? h("span", { class: "note", text: x.lieu }) : null,
+          x.source ? h("a", { class: "note", href: x.source, target: "_blank", rel: "noopener", text: "Image : Wikimedia Commons, domaine public" }) : null);
+        if (!x.image) return h("figure", { class: "oeuvre" },
+          h("div", { class: "oeuvre-absente", text: x.note || "À projeter en classe." }), cartel);
+        var img = h("img", { src: x.image, alt: x.alt, loading: "lazy" });
+        img.addEventListener("error", function () {
+          var p = h("div", { class: "oeuvre-absente", text: "Image indisponible sans connexion internet. " + x.alt });
+          img.replaceWith(p);
+        });
+        return h("figure", { class: "oeuvre" }, img, cartel);
+      })),
+      o.questions ? h("ul", { class: "fiche-liste" }, o.questions.map(function (q) { return h("li", { text: q }); })) : null);
   }
   function sectionFiche(s) {
     var r = s.ressource;

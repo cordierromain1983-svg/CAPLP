@@ -26,6 +26,24 @@
     },
     accroche: "Quelle différence entre être amoureux de quelqu'un et avoir envie de quelqu'un ? On mélange souvent plusieurs choses.",
     temps: ["Ce que je ressens, et les idées reçues", "Images fabriquées et sources fiables"],
+    oeuvres: {
+      temps: 2,
+      titre: "Trois « Baiser » : montrer ou suggérer ?",
+      consigne: "Observe ces œuvres. L'érotisme suggère et laisse place aux émotions et à l'imaginaire.",
+      liste: [
+        { titre: "Le Baiser", auteur: "Francesco Hayez", date: "1859", lieu: "Pinacothèque de Brera, Milan",
+          image: "https://commons.wikimedia.org/wiki/Special:FilePath/Francesco_Hayez_008.jpg?width=800",
+          source: "https://commons.wikimedia.org/wiki/File:Francesco_Hayez_008.jpg",
+          alt: "Tableau : un jeune homme et une jeune femme, en costumes anciens, s'embrassent au pied d'un escalier de pierre." },
+        { titre: "Le Baiser", auteur: "Gustav Klimt", date: "1908", lieu: "Galerie du Belvédère, Vienne",
+          image: "https://commons.wikimedia.org/wiki/Special:FilePath/The_Kiss_-_Gustav_Klimt_-_Google_Cultural_Institute.jpg?width=800",
+          source: "https://commons.wikimedia.org/wiki/File:The_Kiss_-_Gustav_Klimt_-_Google_Cultural_Institute.jpg",
+          alt: "Tableau : un couple enlacé, vêtu d'étoffes dorées couvertes de motifs, agenouillé sur un tapis de fleurs, sur un fond d'or." },
+        { titre: "Le Baiser", auteur: "Constantin Brâncuși", date: "1907-1908",
+          note: "Deux corps taillés dans un seul bloc de pierre. Cette œuvre est encore protégée par le droit d'auteur : l'adulte la projette en classe." }
+      ],
+      questions: ["Qu'est-ce qui est montré ?", "Qu'est-ce qui est suggéré ?", "Quelles émotions ressens-tu ?"]
+    },
     activites: [{
       temps: 1, titre: "Quatre mots", moteur: "cartes",
       consigne: "Associe chaque situation au bon mot. On peut ressentir l'un sans les autres.",
