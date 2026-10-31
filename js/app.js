@@ -286,7 +286,10 @@
           x.lieu ? h("span", { class: "note", text: x.lieu }) : null,
           x.source ? h("a", { class: "note", href: x.source, target: "_blank", rel: "noopener", text: "Image : Wikimedia Commons, domaine public" }) : null);
         if (!x.image) return h("figure", { class: "oeuvre" },
-          h("div", { class: "oeuvre-absente", text: x.note || "À projeter en classe." }), cartel);
+          h("div", { class: "oeuvre-absente pile", style: "gap:10px;align-items:flex-start;justify-content:center" },
+            h("span", { text: x.note || "À projeter en classe." }),
+            x.lien ? h("a", { class: "btn secondaire petit", href: x.lien.url, target: "_blank", rel: "noopener" }, x.lien.texte, h("span", { class: "sr-only", text: "(s'ouvre dans un nouvel onglet)" })) : null),
+          cartel);
         var img = h("img", { src: x.image, alt: x.alt, loading: "lazy" });
         img.addEventListener("error", function () {
           var p = h("div", { class: "oeuvre-absente", text: "Image indisponible sans connexion internet. " + x.alt });

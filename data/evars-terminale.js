@@ -39,8 +39,9 @@
           image: "https://commons.wikimedia.org/wiki/Special:FilePath/The_Kiss_-_Gustav_Klimt_-_Google_Cultural_Institute.jpg?width=800",
           source: "https://commons.wikimedia.org/wiki/File:The_Kiss_-_Gustav_Klimt_-_Google_Cultural_Institute.jpg",
           alt: "Tableau : un couple enlacé, vêtu d'étoffes dorées couvertes de motifs, agenouillé sur un tapis de fleurs, sur un fond d'or." },
-        { titre: "Le Baiser", auteur: "Constantin Brâncuși", date: "1907-1908",
-          note: "Deux corps taillés dans un seul bloc de pierre. Cette œuvre est encore protégée par le droit d'auteur : l'adulte la projette en classe." }
+        { titre: "Le Baiser", auteur: "Constantin Brâncuși", date: "1907-1908, première version",
+          note: "Deux corps taillés dans un seul bloc de pierre. Cette œuvre est encore protégée par le droit d'auteur : on la regarde sur le site d'un musée.",
+          lien: { texte: "Voir la version de 1916 (Philadelphia Museum of Art)", url: "https://www.philamuseum.org/objects/51306" } }
       ],
       questions: ["Qu'est-ce qui est montré ?", "Qu'est-ce qui est suggéré ?", "Quelles émotions ressens-tu ?"]
     },
