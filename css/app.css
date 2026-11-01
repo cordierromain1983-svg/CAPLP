@@ -328,3 +328,9 @@ table.fiche-table tr:last-child th, table.fiche-table tr:last-child td { border-
 #doc-impression { display: none; }
 #doc-impression h1 { font-size: 22px; margin-bottom: 6px; }
 #doc-impression .sous { color: #555; margin-bottom: 18px; font-size: 13px; }
+
+/* Testeur de mot de passe */
+.mdp-criteres { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 4px; font-size: 15px; }
+.mdp-criteres .ok { color: #1E7A3C; }
+.mdp-criteres .ko { color: #8A2A14; }
+.filiere-note { font-size: 14px; }

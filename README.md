@@ -32,6 +32,7 @@ Ouvrez **`js/config.js`** : c'est le seul fichier à modifier. Renseignez le nom
 | `data/cps-premiere.js` | Les 5 séances CPS de Première |
 | `data/cps-terminale.js` | Les 5 séances CPS de Terminale |
 | `data/evars-seconde.js`, `evars-premiere.js`, `evars-terminale.js` | Les 3 séances EVARS de chaque niveau (programme EVARS de février 2025) |
+| `data/cyber-seconde.js`, `cyber-premiere.js`, `cyber-terminale.js` | Les 3 séances Cyber & esprit critique de chaque niveau (EMI, CRCN / Pix, CNIL) |
 | `js/engines.js` | Les moteurs d'activités réutilisables |
 | `js/app.js` | Les pages et la navigation |
 | `css/app.css` | L'apparence |
@@ -60,9 +61,14 @@ Pour ajouter un niveau ou un pilier, créez un fichier `data/<pilier>-<niveau>.j
 | `repertoire` | Liste filtrable par thème (carte des engagements), complétée par `js/config.js` |
 | `cercles` | Projet en quatre cercles, avec reprise des traces des séances précédentes |
 | `retouche` | Décodeur « Réel ou retouché ? » sur un portrait dessiné |
+| `motdepasse` | Testeur de robustesse d'un mot de passe inventé (repères CNIL). Rien n'est enregistré ni envoyé |
 
 Une séance peut être découpée en deux temps : champ `temps` de la séance (titres des deux temps) et champ `temps: 1` ou `temps: 2` sur chaque activité. Dans un quiz, une question `ordre` avec `libre: true` n'a pas de bonne réponse.
 
 ## Liens entre piliers
 
-Chaque séance a un champ `passerelles` : la liste des identifiants des séances d'autres piliers qui lui sont liées (par exemple `["cps-2nde-3"]`). Il suffit d'écrire le lien dans un sens : le lien retour s'affiche automatiquement. Les liens apparaissent en haut de la séance (pastilles « Aussi dans : ») et dans le bloc « Voir aussi dans… ». Les liens EVARS ↔ CPS sont déjà en place.
+Chaque séance a un champ `passerelles` : la liste des identifiants des séances d'autres piliers qui lui sont liées (par exemple `["cps-2nde-3"]`). Il suffit d'écrire le lien dans un sens : le lien retour s'affiche automatiquement. Les liens apparaissent en haut de la séance (pastilles « Aussi dans : ») et dans le bloc « Voir aussi dans… ». Les liens EVARS ↔ CPS et Cyber ↔ CPS / EVARS sont déjà en place.
+
+### Situations par filière
+
+Une activité peut avoir un champ `parFiliere` : `{ ciel: { cas: [...] }, securite: { cartes: [...] } }`. Si l'élève a choisi sa filière dans « Mon espace », les situations (`cas` d'un scénario) ou les cartes (première manche d'un jeu de cartes) de sa filière s'ajoutent. Les filières sont déclarées dans `js/config.js` (`filieres`). Exemple : Cyber Terminale, séance 3.

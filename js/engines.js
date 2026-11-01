@@ -390,7 +390,7 @@
           } } });
           grille.appendChild(b);
         });
-        carte.appendChild(h("p", { class: "texte-doux", text: q.libre ? "Touche les étiquettes dans l'ordre qui te semble le plus courant." : "Touche les étiquettes dans le bon ordre." }));
+        carte.appendChild(h("p", { class: "texte-doux", text: q.aide ? q.aide : q.libre ? "Touche les étiquettes dans l'ordre qui te semble le plus courant." : "Touche les étiquettes dans le bon ordre." }));
         carte.appendChild(grille);
         carte.appendChild(ordre);
       }
@@ -601,12 +601,20 @@
   // 8. JAUGES : se situer sur des curseurs, sans enregistrement
   // =====================================================================
   function jauges(zone, cfg, ctx) {
+    // Options : bornes: ["je débute", "je maîtrise"] ; cle : enregistre les positions sur l'appareil
+    var vals = cfg.cle ? Store.get(cfg.cle, {}) : {};
     if (cfg.consigne) zone.appendChild(h("p", { class: "texte-doux", text: cfg.consigne }));
     cfg.items.forEach(function (it, k) {
       var id = "jauge-" + cfg.id + "-" + k;
-      var v = h("strong", { text: "5" });
-      var r = h("input", { type: "range", min: "0", max: "10", value: "5", id: id, on: { input: function () { v.textContent = r.value; if (ctx && ctx.fini) ctx.fini(); } } });
-      zone.appendChild(h("label", { class: "champ", for: id }, h("span", null, it, " · ", v, " / 10"), r));
+      var depart = vals[k] != null ? String(vals[k]) : "5";
+      var v = h("strong", { text: depart });
+      var r = h("input", { type: "range", min: "0", max: "10", value: depart, id: id, on: { input: function () {
+        v.textContent = r.value;
+        if (cfg.cle) { vals[k] = +r.value; Store.set(cfg.cle, vals); }
+        if (ctx && ctx.fini) ctx.fini();
+      } } });
+      zone.appendChild(h("label", { class: "champ", for: id }, h("span", null, it, " · ", v, " / 10"), r,
+        cfg.bornes ? h("span", { class: "entre texte-doux", style: "font-size:13px;font-weight:400" }, h("span", { text: cfg.bornes[0] }), h("span", { text: cfg.bornes[1] })) : null));
     });
     if (cfg.note) zone.appendChild(h("p", { class: "note", text: cfg.note }));
   }
@@ -1050,9 +1058,92 @@
     maj();
   }
 
+  // =====================================================================
+  // 17. TESTEUR DE MOT DE PASSE : tout est calculé sur l'appareil.
+  //     Rien n'est enregistré ni envoyé. Repères CNIL : 80 bits environ,
+  //     soit 12 caractères de 4 types, 14 sans caractère spécial, ou 7 mots.
+  //     config : { exemples: ["…"] }
+  // =====================================================================
+  var COURANTS = ["123456", "1234", "12345", "123456789", "azerty", "qwerty", "password", "motdepasse", "soleil", "bonjour", "loulou", "doudou", "chouchou",
+    "marseille", "paris", "football", "iloveyou", "jetaime", "admin", "000000", "111111", "princesse", "nicolas", "camille", "123123", "abc123", "pokemon", "minecraft", "chocolat", "coucou"];
+  function analyserMdp(m) {
+    var c = { longueur: m.length, min: /[a-zà-ÿ]/.test(m), maj: /[A-ZÀ-Ý]/.test(m), chiffre: /[0-9]/.test(m), special: /[^a-zA-Z0-9à-ÿÀ-Ý]/.test(m) };
+    var bas = m.toLowerCase();
+    c.courant = COURANTS.some(function (w) { return bas.indexOf(w) >= 0; });
+    c.date = /(19[5-9][0-9]|20[0-3][0-9])/.test(m) || /\b[0-3]?[0-9][\/.\-][01]?[0-9]\b/.test(m);
+    c.repetition = /(.)\1\1/.test(m) || /(abc|bcd|cde|123|234|345|456|567|678|789|azer|qwer)/.test(bas);
+    c.mots = m.trim() ? m.trim().split(/\s+/).filter(function (x) { return x.length >= 2; }).length : 0;
+    var pool = (c.min ? 26 : 0) + (c.maj ? 26 : 0) + (c.chiffre ? 10 : 0) + (c.special ? 33 : 0);
+    var bits = pool ? m.length * Math.log(pool) / Math.LN2 : 0;
+    if (c.courant) bits -= 30;
+    if (c.date) bits -= 10;
+    if (c.repetition) bits -= 8;
+    // Phrase de passe : on compte environ 12 bits par mot (les mots se devinent plus vite que des lettres au hasard)
+    if (c.mots >= 2 && /\s/.test(m.trim())) bits = Math.min(bits, c.mots * 12 + (c.maj || c.chiffre ? 6 : 0));
+    if (c.mots >= 7) bits = Math.max(bits, 84);
+    c.bits = Math.max(0, Math.round(bits));
+    c.niveau = c.bits >= 78 ? "solide" : c.bits >= 50 ? "moyen" : "faible";
+    return c;
+  }
+  function motdepasse(zone, cfg, ctx) {
+    var champ = h("input", { type: "password", id: "mdp-test", autocomplete: "off", autocapitalize: "off", spellcheck: "false", maxlength: "120", placeholder: "Un mot de passe inventé" });
+    var voir = h("button", { class: "btn secondaire petit", type: "button", "aria-pressed": "false", text: "Afficher", on: { click: function () {
+      var cache = champ.type === "password";
+      champ.type = cache ? "text" : "password";
+      voir.textContent = cache ? "Masquer" : "Afficher";
+      voir.setAttribute("aria-pressed", cache ? "true" : "false");
+    } } });
+    var jauge = h("span", { style: "width:0%" });
+    var verdict = h("p", { class: "titre-bloc", style: "font-size:17px;margin:0", "aria-live": "polite" });
+    var criteres = h("ul", { class: "mdp-criteres" });
+    var COUL = { faible: "#B42318", moyen: "#B54708", solide: "#1E7A3C" };
+    var NOMS = { faible: "Faible", moyen: "Moyen", solide: "Solide" };
+    function ligne(ok, texte) { return h("li", { class: ok ? "ok" : "ko" }, h("span", { "aria-hidden": "true", text: ok ? "✓ " : "✗ " }), h("span", { class: "sr-only", text: ok ? "Oui : " : "Non : " }), texte); }
+    function maj() {
+      var m = champ.value;
+      vider(criteres);
+      if (!m) { verdict.textContent = "Tape un mot de passe inventé pour le tester."; jauge.style.width = "0%"; return; }
+      var c = analyserMdp(m);
+      jauge.style.width = Math.min(100, Math.round(c.bits / 90 * 100)) + "%";
+      jauge.style.background = COUL[c.niveau];
+      verdict.textContent = "";
+      verdict.appendChild(h("span", { style: "color:" + COUL[c.niveau], text: NOMS[c.niveau] }));
+      verdict.appendChild(document.createTextNode(c.bits > 100 ? " · plus de 100 bits de solidité" : " · environ " + c.bits + " bits de solidité"));
+      if (c.mots >= 7) criteres.appendChild(ligne(true, "Phrase de passe d'au moins 7 mots"));
+      else {
+        criteres.appendChild(ligne(c.longueur >= 12, "Au moins 12 caractères (ici : " + c.longueur + ")"));
+        criteres.appendChild(ligne(c.min, "Des minuscules"));
+        criteres.appendChild(ligne(c.maj, "Des majuscules"));
+        criteres.appendChild(ligne(c.chiffre, "Des chiffres"));
+        criteres.appendChild(ligne(c.special, "Des caractères spéciaux (! ? @ # espace…)"));
+      }
+      criteres.appendChild(ligne(!c.courant, c.courant ? "Contient un mot de passe très courant : il est testé en premier" : "Pas de mot de passe courant"));
+      criteres.appendChild(ligne(!c.date, c.date ? "Contient une date ou une année : facile à deviner" : "Pas de date"));
+      if (c.repetition) criteres.appendChild(ligne(false, "Contient une suite ou une répétition (aaa, 123, azer…)"));
+      if (c.niveau === "solide" && ctx && ctx.fini) ctx.fini();
+    }
+    champ.addEventListener("input", maj);
+    zone.appendChild(h("div", { class: "alerte", text: "N'écris jamais ton vrai mot de passe ici. Invente-en un. Rien n'est enregistré ni envoyé : tout est calculé sur ton appareil." }));
+    zone.appendChild(h("label", { class: "champ", for: "mdp-test" }, h("span", { text: "Mot de passe à tester" }),
+      h("div", { class: "ligne", style: "flex-wrap:nowrap" }, h("div", { style: "flex:1;min-width:0" }, champ), voir)));
+    zone.appendChild(h("div", { class: "progression", "aria-hidden": "true" }, jauge));
+    zone.appendChild(verdict);
+    zone.appendChild(criteres);
+    if (cfg.exemples && cfg.exemples.length) {
+      zone.appendChild(h("p", { class: "texte-doux", style: "margin-bottom:0", text: "Essaie aussi ces exemples :" }));
+      zone.appendChild(h("div", { class: "ligne", role: "group", "aria-label": "Exemples à tester" }, cfg.exemples.map(function (x) {
+        return h("button", { class: "puce", type: "button", text: x, on: { click: function () { champ.type = "text"; voir.textContent = "Masquer"; voir.setAttribute("aria-pressed", "true"); champ.value = x; maj(); } } });
+      })));
+    }
+    zone.appendChild(h("p", { class: "note", text: "Repère de la CNIL : au moins 12 caractères de quatre types différents, ou 14 sans caractère spécial, ou une phrase de passe d'au moins 7 mots." }));
+    maj();
+    window.addEventListener("hashchange", function vide() { champ.value = ""; window.removeEventListener("hashchange", vide); });
+  }
+
   window.h = h;
   window.vider = vider;
   window.icone = icone;
   window.Moteurs = { cartes: cartes, choisir: choisir, scenario: scenario, quiz: quiz, carnet: carnet, liste: liste, coherence: coherence, jauges: jauges,
-    defi: defi, binome: binome, reformuler: reformuler, tas: tas, debat: debat, repertoire: repertoire, cercles: cercles, retouche: retouche };
+    defi: defi, binome: binome, reformuler: reformuler, tas: tas, debat: debat, repertoire: repertoire, cercles: cercles, retouche: retouche, motdepasse: motdepasse };
+  window.analyserMdp = analyserMdp;
 })();

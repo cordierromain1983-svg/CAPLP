@@ -25,6 +25,14 @@ window.CAP_CONFIG = {
     { nom: "Conseil de la vie lycéenne (CVL)", theme: "Vie du lycée", age: "Tous les lycéens", description: "Se présenter aux élections et porter les projets des élèves. Renseigne-toi auprès du CPE.", url: "" }
   ],
 
+  // Filières de l'établissement : certaines séances (Cyber Terminale, séance 3)
+  // ajoutent des situations propres à ces métiers. L'élève choisit dans « Mon espace ».
+  // Les identifiants "ciel" et "securite" sont utilisés par les séances : ne les changez pas.
+  filieres: [
+    { id: "ciel", nom: "CIEL" },
+    { id: "securite", nom: "Métiers de la sécurité" }
+  ],
+
   // Numéros nationaux, gratuits.
   numeros: [
     { numero: "3018", titre: "Harcèlement et cyberharcèlement",

@@ -270,9 +270,31 @@
         h("span", { class: "etiquette", text: surtitre || "Activité" }),
         h("h2", { id: id, class: "titre-bloc", text: a.titre })),
       a.consigne ? h("p", { class: "texte-doux", text: a.consigne }) : null,
+      noteFiliere(a),
       zone);
-    Moteurs[a.moteur](zone, a.config, { fini: fini });
+    Moteurs[a.moteur](zone, configFiliere(a), { fini: fini });
     return sec;
+  }
+  // Situations propres à la filière de l'élève (choisie dans « Mon espace »)
+  function filieres() { return (window.CAP_CONFIG && CAP_CONFIG.filieres) || []; }
+  function maFiliere() {
+    var id = Store.get("filiere", "");
+    return filieres().filter(function (f) { return f.id === id; })[0] || null;
+  }
+  function configFiliere(a) {
+    var f = maFiliere(), extra = f && a.parFiliere && a.parFiliere[f.id];
+    if (!extra) return a.config;
+    var c = JSON.parse(JSON.stringify(a.config));
+    if (extra.cas && c.cas) c.cas = c.cas.concat(extra.cas);
+    if (extra.cartes && c.manches) c.manches[0].cartes = c.manches[0].cartes.concat(extra.cartes);
+    if (c.id) c.id = c.id + "-" + f.id;
+    return c;
+  }
+  function noteFiliere(a) {
+    if (!a.parFiliere) return null;
+    var f = maFiliere();
+    if (f && a.parFiliere[f.id]) return h("p", { class: "note filiere-note" }, "Des situations de ta filière (" + f.nom + ") sont ajoutées. ", h("a", { href: "#/espace" }, "Changer de filière"));
+    return h("p", { class: "note filiere-note" }, "Tu es en CIEL ou en Métiers de la sécurité ? ", h("a", { href: "#/espace" }, "Indique ta filière dans « Mon espace »"), " pour ajouter des situations de ton métier.");
   }
   function sectionOeuvres(o) {
     return h("section", { class: "carte pile", "aria-labelledby": "oeuvres" },
@@ -446,6 +468,17 @@
     });
     sec.appendChild(h("p", { class: "note", text: "Une séance est faite quand l'activité et « Je vérifie » sont terminés. Pas de note, pas de classement." }));
     page.appendChild(sec);
+
+    // Ma filière (facultatif, reste sur l'appareil)
+    if (filieres().length) {
+      var actuelle = Store.get("filiere", "");
+      var selF = h("select", { id: "filiere", on: { change: function () { Store.set("filiere", selF.value); CapApp.toast(selF.value ? "Filière enregistrée sur cet appareil." : "Filière retirée."); } } },
+        [h("option", { value: "", text: "Je ne précise pas" })].concat(filieres().map(function (f) { var o = h("option", { value: f.id, text: f.nom }); if (f.id === actuelle) o.selected = true; return o; })));
+      page.appendChild(h("section", { class: "carte pile" },
+        h("h2", { class: "titre-bloc", text: "Ma filière" }),
+        h("label", { class: "champ", for: "filiere" }, h("span", { text: "Certaines séances ajoutent des situations propres à ton métier." }), selF),
+        h("p", { class: "note", text: "Ce choix reste sur ton appareil : il n'est envoyé à personne." })));
+    }
 
     // Mes outils personnels
     page.appendChild(h("h2", { class: "titre-bloc", text: "Mes traces" }));
