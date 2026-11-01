@@ -285,15 +285,21 @@
     var f = maFiliere(), extra = f && a.parFiliere && a.parFiliere[f.id];
     if (!extra) return a.config;
     var c = JSON.parse(JSON.stringify(a.config));
-    if (extra.cas && c.cas) c.cas = c.cas.concat(extra.cas);
-    if (extra.cartes && c.manches) c.manches[0].cartes = c.manches[0].cartes.concat(extra.cartes);
+    // extra.config : remplace des réglages ; toute autre liste s'ajoute à la liste du même nom
+    // (cas d'un scénario, cartes d'une manche ou d'un tri, sujets d'un binôme, items…).
+    Object.keys(extra).forEach(function (k) {
+      if (k === "config") Object.keys(extra.config).forEach(function (r) { c[r] = extra.config[r]; });
+      else if (k === "cartes" && c.manches) c.manches[0].cartes = c.manches[0].cartes.concat(extra.cartes);
+      else if (Array.isArray(extra[k]) && Array.isArray(c[k])) c[k] = c[k].concat(extra[k]);
+      else c[k] = extra[k];
+    });
     if (c.id) c.id = c.id + "-" + f.id;
     return c;
   }
   function noteFiliere(a) {
     if (!a.parFiliere) return null;
     var f = maFiliere();
-    if (f && a.parFiliere[f.id]) return h("p", { class: "note filiere-note" }, "Des situations de ta filière (" + f.nom + ") sont ajoutées. ", h("a", { href: "#/espace" }, "Changer de filière"));
+    if (f && a.parFiliere[f.id]) return h("p", { class: "note filiere-note" }, "Des éléments propres à ta filière (" + f.nom + ") sont ajoutés. ", h("a", { href: "#/espace" }, "Changer de filière"));
     return h("p", { class: "note filiere-note" }, "Tu es en CIEL ou en Métiers de la sécurité ? ", h("a", { href: "#/espace" }, "Indique ta filière dans « Mon espace »"), " pour ajouter des situations de ton métier.");
   }
   function sectionOeuvres(o) {

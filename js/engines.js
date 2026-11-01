@@ -410,10 +410,13 @@
   // =====================================================================
   // 5. CARNET : formulaire personnel enregistré (roue des émotions, guide…)
   // =====================================================================
+  //    option afficher : { titre, sources: ["id d'outil", …], vide, faireIci: "id d'outil" }
+  //    -> montre en tête ce que l'élève a déjà noté dans d'autres outils, sans le lui redemander.
   function carnet(zone, cfg, ctx) {
     var data = Store.get(cfg.cle, {});
     var minuterie;
     var info = h("p", { class: "note", "aria-live": "polite" });
+    if (cfg.afficher) zone.appendChild(dejaNote(cfg.afficher));
     if (cfg.intro) zone.appendChild(h("p", { class: "texte-doux", text: cfg.intro }));
     cfg.champs.forEach(function (c) {
       var id = cfg.cle + "-" + c.id;
@@ -444,6 +447,70 @@
         });
         CapApp.imprimer(cfg.titreDoc || "Mon carnet", bloc);
       } } }, icone("imprime"), "Imprimer ou PDF")));
+  }
+
+  // ---------- Reprendre ce que l'élève a déjà noté dans un autre outil ----------
+  function trouverOutil(oid) {
+    var r = null;
+    (window.CAP_SEANCES || []).forEach(function (s) {
+      (s.activites || []).concat(s.traces || []).forEach(function (a) {
+        if (!r && a.outil && a.outil.id === oid) r = { bloc: a, seance: s };
+      });
+    });
+    return r;
+  }
+  function resumeOutil(o) {
+    var c = o.bloc.config, d = Store.get(c.cle, null);
+    if (!d) return null;
+    var m = o.bloc.moteur;
+    if (m === "choisir" || m === "tas") return (d.choix || []).length ? [d.choix.join(", ") + "."] : null;
+    if (m === "carnet") {
+      var l = c.champs.filter(function (f) { return (d[f.id] || "").trim(); }).map(function (f) { return f.label + " : " + d[f.id].trim(); });
+      return l.length ? l : null;
+    }
+    if (m === "liste") {
+      if (!Array.isArray(d) || !d.length) return null;
+      return d.slice(0, 6).map(function (e) {
+        return c.gabarit ? remplir(c.gabarit, e) : c.champs.filter(function (f) { return e[f.id]; }).map(function (f) { return e[f.id]; }).join(" · ");
+      });
+    }
+    return null;
+  }
+  function dejaNote(aff) {
+    var bloc = h("div", { class: "retour-info pile", style: "gap:8px" });
+    function rendu() {
+      vider(bloc);
+      bloc.appendChild(h("strong", { text: aff.titre || "Ce que tu as déjà noté" }));
+      var manquants = [], trouves = 0;
+      (aff.sources || []).forEach(function (oid) {
+        var o = trouverOutil(oid);
+        if (!o) return;
+        var r = resumeOutil(o);
+        if (!r) { manquants.push(o); return; }
+        trouves++;
+        bloc.appendChild(h("div", { class: "pile", style: "gap:2px" },
+          h("span", { style: "font-weight:700", text: o.bloc.outil.nom }),
+          h("ul", { style: "margin:0;padding-left:20px" }, r.map(function (x) { return h("li", { text: x }); }))));
+      });
+      if (!trouves) bloc.appendChild(h("p", { style: "margin:0", text: aff.vide || "Tu n'as encore rien noté dans ces outils. Ce n'est pas grave : écris directement ici." }));
+      if (manquants.length) bloc.appendChild(h("p", { class: "note", style: "margin:0" },
+        "Pas encore fait, si tu veux plus tard (ce n'est pas obligatoire) : ",
+        manquants.map(function (o, k) {
+          return [k ? ", " : "", h("a", { href: "#/seance/" + o.seance.id, text: o.bloc.outil.nom })];
+        }), "."));
+      var ici = aff.faireIci && manquants.filter(function (o) { return o.bloc.outil.id === aff.faireIci; })[0];
+      if (ici) {
+        var sous = h("div", { class: "pile" });
+        bloc.appendChild(h("button", { class: "btn secondaire petit", type: "button", style: "align-self:flex-start", on: { click: function (ev) {
+          ev.currentTarget.remove();
+          sous.appendChild(h("p", { class: "note", text: "Ce que tu choisis ici s'enregistre aussi dans « " + ici.bloc.outil.nom + " »." }));
+          window.Moteurs[ici.bloc.moteur](sous, ici.bloc.config, {});
+        } } }, "Le faire ici maintenant"));
+        bloc.appendChild(sous);
+      }
+    }
+    rendu();
+    return bloc;
   }
 
   // =====================================================================
@@ -674,16 +741,16 @@
     var sujet = h("p", { class: "carte-jeu", style: "font-size:17px", tabindex: "-1" });
     var roles = h("p", { class: "texte-doux" });
     var temps = h("p", { class: "cc-temps", style: "text-align:center", text: fmt(duree) });
-    var bouton = h("button", { class: "btn pilier", type: "button", on: { click: function () { timer ? stop(false) : go(); } } }, "Lancer les 3 minutes");
+    var lancer = "Lancer " + (duree % 60 === 0 ? (duree === 60 ? "la minute" : "les " + duree / 60 + " minutes") : "le minuteur");
+    var roles2 = cfg.roles || ["Élève A raconte. Élève B écoute sans couper, puis reformule à la fin.", "On inverse : élève B raconte, élève A écoute puis reformule."];
+    var bouton = h("button", { class: "btn pilier", type: "button", on: { click: function () { timer ? stop(false) : go(); } } }, lancer);
     var autre = h("button", { class: "btn secondaire", type: "button", on: { click: function () { iSujet = (iSujet + 1) % sujets.length; maj(); } } }, icone("relance"), "Autre sujet");
     var suivant = h("button", { class: "btn secondaire", type: "button", on: { click: function () { tour++; iSujet = (iSujet + 1) % sujets.length; stop(false); maj(); } } }, "Changer de rôle");
     var info = h("div", { "aria-live": "polite" });
     function fmt(s) { return Math.floor(s / 60) + ":" + String(Math.floor(s % 60)).padStart(2, "0"); }
     function maj() {
       sujet.textContent = sujets[iSujet];
-      roles.textContent = tour % 2 === 0
-        ? "Élève A raconte. Élève B écoute sans couper, puis reformule à la fin."
-        : "On inverse : élève B raconte, élève A écoute puis reformule.";
+      roles.textContent = roles2[tour % 2];
       temps.textContent = fmt(duree);
     }
     function go() {
@@ -695,10 +762,10 @@
       }, 250);
     }
     function stop(fin) {
-      clearInterval(timer); timer = null; bouton.textContent = "Lancer les 3 minutes"; temps.textContent = fmt(duree);
+      clearInterval(timer); timer = null; bouton.textContent = lancer; temps.textContent = fmt(duree);
       if (fin) {
         vider(info);
-        info.appendChild(h("div", { class: "retour-info" }, h("strong", { text: "Temps écoulé. " }), "À l'écouteur de reformuler : « Si j'ai bien compris… ». Puis changez de rôle."));
+        info.appendChild(h("div", { class: "retour-info" }, h("strong", { text: "Temps écoulé. " }), cfg.finTour || "À l'écouteur de reformuler : « Si j'ai bien compris… ». Puis changez de rôle."));
         if (tour >= 1 && ctx && ctx.fini) ctx.fini();
       }
     }
@@ -716,19 +783,20 @@
   // 11. ATELIER DE REFORMULATION (message « Je ») avec repérage des mots qui accusent
   //    config : { items:[{reproche, exemple}], champs:[{id,label,aide}], gabarit, alertes:[{motif, conseil}] }
   // =====================================================================
+  //    option textes : { etiquette, depart, message, suivant, fin } pour d'autres usages que le message « Je »
   function reformuler(zone, cfg, ctx) {
-    var i = 0;
+    var i = 0, T = cfg.textes || {};
     function item() {
       vider(zone);
       if (i >= cfg.items.length) {
-        zone.appendChild(h("div", { class: "retour-ok" }, h("strong", { text: "Atelier terminé. " }), "Tu as transformé " + cfg.items.length + " reproches en messages qui expliquent sans accuser."));
+        zone.appendChild(h("div", { class: "retour-ok" }, h("strong", { text: "Atelier terminé. " }), T.fin || "Tu as transformé " + cfg.items.length + " reproches en messages qui expliquent sans accuser."));
         zone.appendChild(h("button", { class: "btn secondaire", type: "button", on: { click: function () { i = 0; item(); } } }, icone("relance"), "Recommencer"));
         if (ctx && ctx.fini) ctx.fini();
         return;
       }
       var it = cfg.items[i];
-      zone.appendChild(h("span", { class: "etiquette", text: "Reproche " + (i + 1) + " sur " + cfg.items.length }));
-      zone.appendChild(h("div", { class: "bulle autre", style: "max-width:100%" }, h("span", { class: "qui", text: "Le reproche" }), it.reproche));
+      zone.appendChild(h("span", { class: "etiquette", text: (T.etiquette || "Reproche") + " " + (i + 1) + " sur " + cfg.items.length }));
+      zone.appendChild(h("div", { class: "bulle autre", style: "max-width:100%" }, h("span", { class: "qui", text: T.depart || "Le reproche" }), it.reproche));
       var champs = {};
       cfg.champs.forEach(function (c) {
         var id = "ref-" + i + "-" + c.id;
@@ -747,7 +815,7 @@
         });
       }
       Object.keys(champs).forEach(function (k) { champs[k].addEventListener("input", maj); });
-      zone.appendChild(h("span", { class: "etiquette", text: "Mon message" }));
+      zone.appendChild(h("span", { class: "etiquette", text: T.message || "Mon message" }));
       zone.appendChild(apercu);
       zone.appendChild(alertes);
       var exemple = h("div", { "aria-live": "polite" });
@@ -756,7 +824,7 @@
         h("button", { class: "btn secondaire petit", type: "button", on: { click: function () {
           vider(exemple); exemple.appendChild(h("div", { class: "retour-ok" }, h("strong", { text: "Un exemple possible : " }), it.exemple));
         } } }, "Voir un exemple"),
-        h("button", { class: "btn pilier petit", type: "button", on: { click: function () { i++; item(); } } }, i + 1 < cfg.items.length ? "Reproche suivant" : "Terminer", icone("fleche"))));
+        h("button", { class: "btn pilier petit", type: "button", on: { click: function () { i++; item(); } } }, i + 1 < cfg.items.length ? (T.suivant || "Reproche suivant") : "Terminer", icone("fleche"))));
       maj();
     }
     item();
