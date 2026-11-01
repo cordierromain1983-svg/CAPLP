@@ -10,6 +10,7 @@
 (function () {
   var S = window.CAP_SEANCES = window.CAP_SEANCES || [];
   var DUREE = "55 min";
+  var A = window.CAP_ACTU.texte; // faits datés : data/actualites.js
 
   // ===================================================================
   // SÉANCE 1 · Ce que les autres voient de moi au travail
@@ -206,7 +207,7 @@
         roles: ["Élève A joue le professionnel de la fiche. Élève B pose ses questions, écoute, puis reformule ce qu'il a retenu.", "On inverse : élève B joue un professionnel, élève A l'interroge puis reformule."],
         finTour: "Temps écoulé. L'intervieweur reformule : « Si j'ai bien compris, votre métier… ». Puis changez de rôle.",
         sujets: [
-          "Karim, agent de sécurité incendie dans un centre commercial depuis six ans",
+          "Farid, agent de sécurité incendie dans un centre commercial depuis six ans",
           "Léa, gardienne de la paix, ancienne élève de bac pro",
           "Sarah, technicienne réseau dans une mairie",
           "Hugo, technicien support, en BTS en apprentissage"
@@ -219,7 +220,7 @@
           "Paul, sapeur-pompier professionnel, ancien volontaire"
         ] },
         ciel: { sujets: [
-          "Mehdi, installateur fibre, a créé son entreprise",
+          "Mathieu, installateur fibre, a créé son entreprise",
           "Julie, technicienne en cybersécurité après un BTS CIEL",
           "Antoine, électronicien dans un atelier de réparation"
         ] }
@@ -334,7 +335,7 @@
         ])] }
       }
     }, {
-      titre: "Comparer les chemins", moteur: "cartes",
+      titre: "Comparer les chemins", facultatif: true, moteur: "cartes",
       consigne: "À quel chemin correspond le mieux chaque phrase ?",
       config: {
         fin: "Chaque chemin a ses avantages et ses conditions. Le bon chemin, c'est celui qui te correspond.",
@@ -357,8 +358,8 @@
       titre: "Mon calendrier jusqu'au bac", moteur: "quiz",
       config: { id: "orientation-1re-3-calendrier", questions: [
         { type: "ordre", enonce: "Remets les étapes dans l'ordre, de la Première au bac.",
-          elements: ["PFMP de juin de Première", "Choix du parcours, à la rentrée de Terminale", "Ouverture des vœux sur Parcoursup (mi-janvier)", "Forum des anciens du lycée (février)", "Parcours personnalisé de deux semaines (avant la mi-mars)", "Épreuves écrites du bac (début juin)", "Oral de projet (fin juin)"],
-          explication: "En 2027 : vœux du 18 janvier au 11 mars, écrits du 3 au 15 juin, oral de projet à partir du 21 juin. Les dates changent chaque année : vérifie-les avec ton professeur principal." }
+          elements: ["PFMP de juin de Première", "Choix du parcours, à la rentrée de Terminale", "Ouverture des vœux sur Parcoursup (mi-janvier)", "Forum des anciens du lycée (février)", "Parcours personnalisé (" + A("parcoursPersoDuree") + ", " + A("parcoursPersoQuand").toLowerCase() + ")", "Épreuves écrites du bac (début juin)", "Oral de projet (fin juin)"],
+          explication: "En " + A("sessionBac") + " : vœux du " + A("voeuxDebut") + " au " + A("voeuxFin") + ", écrits du " + A("ecritsDebut") + " au " + A("ecritsFin") + ", oral de projet à partir du " + A("oralProjet") + ". Les dates changent chaque année : vérifie-les avec ton professeur principal." }
       ] }
     }],
     retenir: [
@@ -378,7 +379,7 @@
           ["Concours", "Une préparation", "Selon les dates des concours", "Un emploi stable", "Sélectif"],
           ["Certificat de spécialisation", "Un dossier", "Printemps de Terminale", "Se spécialiser en un an", "Peu de places"]
         ] },
-        { type: "etapes", titre: "Le calendrier de la Terminale (2026-2027)", items: ["Rentrée : choix du parcours, insertion ou poursuite d'études", "18 janvier – 11 mars : vœux sur Parcoursup", "Février : forum des anciens du lycée", "Avant la mi-mars : parcours personnalisé de deux semaines", "Printemps : recherche d'alternance ou d'emploi", "3 – 15 juin : épreuves écrites", "À partir du 21 juin : oral de projet"] },
+        { type: "etapes", titre: "Le calendrier de la Terminale (" + A("annee") + ")", items: ["Rentrée : choix du parcours, insertion ou poursuite d'études", A("voeuxDebut") + " – " + A("voeuxFin") + " : vœux sur Parcoursup", "Février : forum des anciens du lycée", "Parcours personnalisé : " + A("parcoursPersoDuree") + ", " + A("parcoursPersoQuand").toLowerCase(), "Printemps : recherche d'alternance ou d'emploi", A("ecritsDebut") + " – " + A("ecritsFin") + " : épreuves écrites", "À partir du " + A("oralProjet") + " : oral de projet"] },
         { type: "texte", titre: "Ma direction et mes deux actions de l'été", texte: "Plutôt insertion / plutôt poursuite d'études / pas encore décidé. Avant septembre, je vais : 1. … 2. … Qui peut m'aider : …" }
       ]
     },
@@ -422,7 +423,7 @@
       { titre: "Testez vos connaissances sur les études", source: "Onisep", url: "https://www.onisep.fr/metier/les-quiz-de-l-onisep/testez-vos-connaissances-sur-les-etudes", description: "Un quiz sur les études après le bac." },
       { titre: "Parcoursup", source: "Ministère de l'Enseignement supérieur", url: "https://www.parcoursup.gouv.fr", description: "Le calendrier officiel et l'offre de formation." }
     ],
-    passerelles: ["cps-tle-2"],
+    passerelles: ["cps-tle-2", "cps-tle-5"],
     adulte: {
       deroule: [
         ["0-5 min", "Accroche", "Vote : insertion, poursuite d'études, ou pas encore décidé.", "Ne commente pas les votes."],

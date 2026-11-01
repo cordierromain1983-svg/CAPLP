@@ -11,6 +11,7 @@
 (function () {
   var S = window.CAP_SEANCES = window.CAP_SEANCES || [];
   var DUREE = "55 min";
+  var A = window.CAP_ACTU.texte; // faits datés : data/actualites.js
 
   // ===================================================================
   // SÉANCE 1 · Mon CV et ma lettre
@@ -155,7 +156,7 @@
       ou: "Parcoursup, recherche d'alternance, emploi après le bac, forum des anciens.",
       lie: "Arnaques et manipulation (Cyber Première, séance 3), décider en quatre questions (CPS Terminale, séance 2), construire son avenir avec sens (CPS Terminale, séance 5)."
     },
-    accroche: "Inès a fait ses dix vœux le 10 mars à 23 h. Yanis a envoyé le même message à quarante entreprises pour une alternance, sans réponse. Tous deux sont inventés. Qu'auraient-ils pu faire autrement ?",
+    accroche: "Lou a fait ses dix vœux le 10 mars à 23 h. Enzo a envoyé le même message à quarante entreprises pour une alternance, sans réponse. Tous deux sont inventés. Qu'auraient-ils pu faire autrement ?",
     activites: [{
       titre: "Mon plan de candidatures", moteur: "liste",
       outil: { id: "plan-candidatures", nom: "Mon plan de candidatures", description: "Où je candidate, avant quand, ce qu'il faut, où j'en suis." },
@@ -176,9 +177,9 @@
     }, {
       titre: "Parcoursup sans pièges", moteur: "quiz",
       config: { id: "orientation-tle-2-parcoursup", questions: [
-        { type: "vf", enonce: "En 2027, les vœux se font du 18 janvier au 11 mars.", bonne: true, explication: "Ne pas attendre le dernier soir : le site peut être saturé, et on oublie des pièces." },
-        { type: "vf", enonce: "Il faut classer ses vœux par ordre de préférence dès janvier.", bonne: false, explication: "Jusqu'à 10 vœux, non classés. On ne classe qu'au début de juin, pour les vœux encore en attente." },
-        { type: "vf", enonce: "Certaines formations demandent une lettre ou des pièces avant le 1er avril.", bonne: true, explication: "C'est la date limite pour compléter son dossier." },
+        { type: "vf", enonce: "En " + A("sessionBac") + ", les vœux se font du " + A("voeuxDebut") + " au " + A("voeuxFin") + ".", bonne: true, explication: "Ne pas attendre le dernier soir : le site peut être saturé, et on oublie des pièces." },
+        { type: "vf", enonce: "Il faut classer ses vœux par ordre de préférence dès janvier.", bonne: false, explication: "Jusqu'à " + A("voeuxMax") + " vœux, non classés. On ne classe qu'au début de juin, pour les vœux encore en attente." },
+        { type: "vf", enonce: "Certaines formations demandent une lettre ou des pièces avant le " + A("piecesLimite") + ".", bonne: true, explication: "C'est la date limite pour compléter son dossier." },
         { type: "vf", enonce: "On peut ajouter des vœux en apprentissage, en plus des autres.", bonne: true, explication: "Jusqu'à 10 vœux supplémentaires en apprentissage." },
         { type: "vf", enonce: "L'avis du conseil de classe compte pour les bacheliers professionnels qui visent un BTS.", bonne: true, explication: "Les formations le prennent en compte quand elles examinent les dossiers." },
         { type: "vf", enonce: "Une formation qui se dit « diplômante » est forcément reconnue par l'État.", bonne: false, explication: "Je vérifie la mention « reconnue par l'État » sur Parcoursup ou sur l'Onisep." }
@@ -191,7 +192,7 @@
           explication: "Cibler, adapter, envoyer, noter, relancer : c'est la régularité qui paie. Le CFA aide aussi à trouver une entreprise." }
       ] }
     }, {
-      titre: "Offre sérieuse ou à vérifier ?", moteur: "cartes",
+      titre: "Offre sérieuse ou à vérifier ?", facultatif: true, moteur: "cartes",
       consigne: "Des offres inventées. Laquelle est sérieuse, laquelle faut-il vérifier ?",
       config: {
         fin: "Un contrat d'apprentissage ne coûte rien à l'apprenti. Un recruteur sérieux te rencontre avant de te demander tes papiers.",
@@ -211,7 +212,7 @@
     }],
     retenir: [
       "Une candidature réussie : une cible choisie, une date respectée, une pièce complète, une relance.",
-      "Sur Parcoursup : vœux jusqu'au 11 mars 2027, pièces jusqu'au 1er avril.",
+      "Sur Parcoursup : vœux jusqu'au " + A("voeuxFin") + " " + A("sessionBac") + ", pièces jusqu'au " + A("piecesLimite") + ".",
       "Pour l'alternance : je cherche tôt, je cible, je relance.",
       "Une offre qui demande de l'argent ou mes papiers trop tôt, je la vérifie."
     ],
@@ -219,17 +220,17 @@
       titre: "Mes candidatures",
       intro: "Le calendrier de l'année et un plan à remplir à la main.",
       blocs: [
-        { type: "tableau", titre: "Le calendrier de la Terminale (2026-2027)", colonnes: ["Date", "Étape"], lignes: [
+        { type: "tableau", titre: "Le calendrier de la Terminale (" + A("annee") + ")", colonnes: ["Date", "Étape"], lignes: [
           ["Rentrée", "Choix du parcours : insertion ou poursuite d'études"],
-          ["17 décembre 2026", "Ouverture de la carte des formations Parcoursup"],
-          ["18 janvier – 11 mars 2027", "Vœux sur Parcoursup (jusqu'à 10, non classés)"],
+          [A("parcoursupCarte"), "Ouverture de la carte des formations Parcoursup"],
+          [A("voeuxDebut") + " – " + A("voeuxFin") + " " + A("sessionBac"), "Vœux sur Parcoursup (jusqu'à " + A("voeuxMax") + ", non classés)"],
           ["Février", "Forum des anciens du lycée"],
-          ["Avant la mi-mars", "Parcours personnalisé de deux semaines"],
-          ["1er avril 2027", "Date limite des pièces demandées"],
-          ["1er juin 2027", "Premières propositions d'admission"],
-          ["3 – 15 juin 2027", "Épreuves écrites du bac pro"],
-          ["À partir du 21 juin 2027", "Oral de projet"],
-          ["10 juin – 7 septembre 2027", "Phase complémentaire Parcoursup"]
+          [A("parcoursPersoQuand"), "Parcours personnalisé de " + A("parcoursPersoDuree")],
+          [A("piecesLimite") + " " + A("sessionBac"), "Date limite des pièces demandées"],
+          [A("propositions") + " " + A("sessionBac"), "Premières propositions d'admission"],
+          [A("ecritsDebut") + " – " + A("ecritsFin") + " " + A("sessionBac"), "Épreuves écrites du bac pro"],
+          ["À partir du " + A("oralProjet") + " " + A("sessionBac"), "Oral de projet"],
+          [A("complementaire") + " " + A("sessionBac"), "Phase complémentaire Parcoursup"]
         ] },
         { type: "tableau", titre: "Mon plan de candidatures", colonnes: ["Cible", "Type", "Date limite", "Pièces", "Relance", "Réponse"], lignes: [
           ["", "", "", "", "", ""], ["", "", "", "", "", ""], ["", "", "", "", "", ""], ["", "", "", "", "", ""]
@@ -251,12 +252,12 @@
       }
     }],
     verifie: [
-      { type: "qcm", enonce: "Jusqu'à quand peut-on faire ses vœux sur Parcoursup en 2027 ?", options: ["Le 18 janvier", "Le 11 mars", "Le 1er juin"], bonne: 1, explication: "Puis les pièces jusqu'au 1er avril." },
+      { type: "qcm", enonce: "Jusqu'à quand peut-on faire ses vœux sur Parcoursup en " + A("sessionBac") + " ?", options: ["Le " + A("voeuxDebut"), "Le " + A("voeuxFin"), "Le " + A("propositions")], bonne: 1, explication: "Puis les pièces jusqu'au " + A("piecesLimite") + "." },
       { type: "qcm", enonce: "Une semaine après une candidature, pas de réponse. Que fais-tu ?", options: ["J'abandonne", "Je relance poliment", "J'envoie la même lettre à quarante autres entreprises"], bonne: 1, explication: "Une relance montre ta motivation." },
       { type: "ouverte", enonce: "Cite un signe d'arnaque à l'alternance.", modele: "On me demande de payer des frais, ou d'envoyer mes papiers avant tout entretien." }
     ],
     plusLoin: [
-      { titre: "Parcoursup 2027 : calendrier et étapes", source: "Onisep", url: "https://www.onisep.fr/orientation/l-enseignement-superieur/parcoursup-2027/parcoursup-2027-calendrier-et-etapes-de-la-procedure", description: "Toutes les dates de la procédure." },
+      { titre: "Parcoursup " + A("sessionBac") + " : calendrier et étapes", source: "Onisep", url: A("urlParcoursup"), description: "Toutes les dates de la procédure." },
       { titre: "Parcoursup", source: "Ministère de l'Enseignement supérieur", url: "https://www.parcoursup.gouv.fr", description: "Le site officiel." },
       { titre: "La bonne alternance", source: "Service public", url: "https://labonnealternance.apprentissage.beta.gouv.fr/guide-alternant/preparer-son-projet-en-alternance", description: "Chercher une entreprise et préparer son projet." },
       { titre: "L'admission en BTS", source: "Onisep", url: "https://www.onisep.fr/formation/apres-le-bac-les-etudes-superieures/les-principales-filieres-d-etudes-superieures/le-bts-et-le-btsa/l-admission-en-bts-et-en-btsa", description: "Avis du conseil de classe, mention, admission de droit." }
@@ -264,7 +265,7 @@
     passerelles: ["cyber-1re-3", "cps-tle-2", "cps-tle-5"],
     adulte: {
       deroule: [
-        ["0-5 min", "Accroche", "Réagit aux erreurs d'Inès et de Yanis.", ""],
+        ["0-5 min", "Accroche", "Réagit aux erreurs de Lou et d'Enzo.", ""],
         ["5-20 min", "Activité", "Crée au moins trois fiches dans son plan de candidatures.", "Les élèves en insertion travaillent sur l'emploi, l'alternance ou les concours."],
         ["20-30 min", "Activité", "Répond au quiz Parcoursup.", "Ne demande jamais d'ouvrir son dossier Parcoursup en classe."],
         ["30-40 min", "Activité", "Remet la méthode dans l'ordre et trie des offres.", "Fait le lien avec les arnaques vues en Cyber Première."],
@@ -287,7 +288,7 @@
     aqcms: {
       pourquoi: "À l'oral, le stress fait perdre leurs moyens à des élèves qui ont pourtant de bons arguments. Ce qui est préparé se dit mieux.",
       apport: "Des réponses prêtes, une méthode pour raconter une expérience, des repères sur mes droits, une routine du jour J.",
-      ou: "Entretien d'embauche, d'alternance ou d'entrée en formation ; oral de projet (à partir du 21 juin 2027 : 5 minutes de présentation, 10 minutes de questions).",
+      ou: "Entretien d'embauche, d'alternance ou d'entrée en formation ; oral de projet (à partir du " + A("oralProjet") + " " + A("sessionBac") + " : " + A("oralProjetDuree") + ").",
       lie: "Gérer son stress (CPS Seconde, séance 4), l'écoute active (CPS Première, séance 2), mon bilan de stage (Orientation Première, séance 1)."
     },
     accroche: "« Parlez-moi de vous. » Trois réponses inventées. Léo récite son CV ligne par ligne. Nora raconte sa vie de famille. Malik dit en une minute qui il est, ce qu'il a appris en stage et ce qu'il cherche. Laquelle donne envie de continuer l'entretien ?",
@@ -346,7 +347,7 @@
         ciel: { sujets: ["Expliquez une panne à un client qui n'y connaît rien.", "Que faites-vous si vous ne trouvez pas la panne ?", "Comment protégez-vous les données d'un client ?"] }
       }
     }, {
-      titre: "Le jour J", moteur: "quiz",
+      titre: "Le jour J", facultatif: true, moteur: "quiz",
       config: { id: "orientation-tle-3-jour-j", questions: [
         { type: "ordre", enonce: "Remets les gestes dans l'ordre.",
           elements: ["La veille : je prépare mon itinéraire, ma tenue, mon CV imprimé", "J'arrive dix minutes en avance, téléphone éteint", "Je salue et je me présente", "J'écoute chaque question jusqu'au bout", "Je pose ma question à la fin", "Je remercie", "Après : un court message de remerciement, et une note dans mon plan de candidatures"],
@@ -384,10 +385,10 @@
       { type: "vf", enonce: "Poser une question à la fin montre mon intérêt.", bonne: true, explication: "Prépare-la à l'avance." }
     ],
     plusLoin: [
-      { titre: "Le bac professionnel : le point sur les épreuves", source: "Onisep", url: "https://www.onisep.fr/formation/apres-la-3-la-voie-professionnelle/les-diplomes-de-la-voie-pro/le-bac-professionnel/le-bac-professionnel-le-point-sur-les-epreuves", description: "Le calendrier 2027 et l'oral de projet." },
+      { titre: "Le bac professionnel : le point sur les épreuves", source: "Onisep", url: "https://www.onisep.fr/formation/apres-la-3-la-voie-professionnelle/les-diplomes-de-la-voie-pro/le-bac-professionnel/le-bac-professionnel-le-point-sur-les-epreuves", description: "Le calendrier " + A("sessionBac") + " et l'oral de projet." },
       { titre: "Entretien d'embauche : les questions à éviter", source: "CCI Paris Île-de-France", url: "https://www.entreprises.cci-paris-idf.fr/web/rh/entretien-d-embauche-les-questions-a-eviter-pour-ne-pas-discriminer", description: "Ce qu'un recruteur n'a pas le droit de demander." }
     ],
-    passerelles: ["cps-2nde-4", "cps-1re-2", "cps-tle-5"],
+    passerelles: ["cps-2nde-4", "cps-1re-2", "cps-tle-5", "evars-1re-3"],
     adulte: {
       deroule: [
         ["0-5 min", "Accroche", "Compare trois réponses à « Parlez-moi de vous ».", ""],

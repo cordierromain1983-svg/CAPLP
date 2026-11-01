@@ -138,7 +138,7 @@
       { titre: "Quiz : Quels univers professionnels selon ma personnalité ?", source: "Onisep", url: "https://www.onisep.fr/metier/les-quiz-de-l-onisep/quiz-secteurs", description: "24 questions, sans compte." },
       { titre: "La plateforme Avenir(s)", source: "Onisep", url: "https://www.onisep.fr/avenir-s", description: "Des activités et un portfolio d'orientation, avec ton compte ÉduConnect, à faire chez toi si tu le souhaites." }
     ],
-    passerelles: ["cps-2nde-3", "cyber-2nde-2"],
+    passerelles: ["cps-2nde-3", "cyber-2nde-2", "cps-tle-1"],
     adulte: {
       deroule: [
         ["0-5 min", "Accroche", "Réagit à l'histoire de Léo : qui décide de ce qui me ressemble ?", "Recueille quelques réponses à main levée, sans débat long."],
@@ -184,12 +184,12 @@
               ["Non, il fallait faire un BTS tout de suite", false, "On peut se former plus tard : formation continue, apprentissage, validation des acquis."]
             ]],
             "L'emploi direct est un vrai choix. Dans la sécurité privée, le casier est vérifié."),
-          parcours("Noah, technicien de maintenance (CIEL)",
-            ["Noah a passé un bac pro CIEL. Il veut travailler tout de suite comme technicien de maintenance.", "Qu'est-ce qui l'aide le plus à être recruté ?", [
+          parcours("Ilyes, technicien de maintenance (CIEL)",
+            ["Ilyes a passé un bac pro CIEL. Il veut travailler tout de suite comme technicien de maintenance.", "Qu'est-ce qui l'aide le plus à être recruté ?", [
               ["Ses stages, et ce que ses tuteurs ont dit de lui", true, "Oui : les PFMP sont souvent le meilleur argument d'un bachelier pro."],
               ["Ses notes de Seconde", false, "Les recruteurs regardent surtout le diplôme, les stages et l'attitude."]
             ]],
-            ["Noah découvre au travail qu'il adore la cybersécurité.", "Peut-il s'y former plus tard ?", [
+            ["Ilyes découvre au travail qu'il adore la cybersécurité.", "Peut-il s'y former plus tard ?", [
               ["Oui, par exemple par un BTS en apprentissage ou une formation continue", true, "Oui : on peut reprendre une formation après quelques années de travail."],
               ["Non, c'est trop tard", false, "Il n'est jamais trop tard pour se former."]
             ]],
@@ -198,12 +198,12 @@
       },
       parFiliere: {
         securite: { cas: [
-          parcours("Clara, BTS Management opérationnel de la sécurité",
-            ["Clara veut continuer en BTS Management opérationnel de la sécurité après son bac pro.", "Comment entre-t-on en BTS ?", [
+          parcours("Manon, BTS Management opérationnel de la sécurité",
+            ["Manon veut continuer en BTS Management opérationnel de la sécurité après son bac pro.", "Comment entre-t-on en BTS ?", [
               ["Sur dossier, en faisant des vœux sur Parcoursup en Terminale", true, "Oui. Un bon dossier et l'avis du conseil de classe comptent."],
               ["Automatiquement, avec le bac", false, "L'entrée en BTS n'est pas automatique : elle se fait sur dossier, via Parcoursup."]
             ]],
-            ["Clara a obtenu son bac avec une mention bien.", "Qu'est-ce que la mention peut changer ?", [
+            ["Manon a obtenu son bac avec une mention bien.", "Qu'est-ce que la mention peut changer ?", [
               ["Sans proposition sur Parcoursup, elle donne un accès de droit à un BTS du même domaine où elle a candidaté", true, "Oui. Une raison de plus de travailler dès la Seconde."],
               ["Rien du tout", false, "La mention bien ou très bien ouvre un accès de droit au BTS du même domaine, si l'élève n'a reçu aucune proposition."]
             ]],

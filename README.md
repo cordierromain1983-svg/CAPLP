@@ -28,6 +28,8 @@ Ouvrez **`js/config.js`** : c'est le seul fichier à modifier. Renseignez le nom
 | Fichier | Contenu |
 | --- | --- |
 | `data/piliers.js` | Les 7 piliers (nom, couleur, actif ou non) et les niveaux |
+| `data/actualites.js` | **Les faits datés à relire chaque rentrée** : calendrier Parcoursup, dates du bac, lois et peines citées. Les séances y puisent avec `A("cle")` |
+| `data/situations.js` | Les situations de « Ma boîte à outils » (« Je pars en stage », « Ça ne va pas »…) et les outils de chacune |
 | `data/cps-seconde.js` | Les 5 séances CPS de Seconde |
 | `data/cps-premiere.js` | Les 5 séances CPS de Première |
 | `data/cps-terminale.js` | Les 5 séances CPS de Terminale |
@@ -41,6 +43,23 @@ Ouvrez **`js/config.js`** : c'est le seul fichier à modifier. Renseignez le nom
 Pour ajouter un niveau ou un pilier, créez un fichier `data/<pilier>-<niveau>.js` sur le modèle de `cps-seconde.js`, ajoutez-le dans `index.html` (balise `<script>`) et dans la liste `FICHIERS` de `sw.js`, et passez le pilier à `actif: true` dans `data/piliers.js`.
 
 **Après toute modification**, augmentez le numéro `VERSION` en haut de `sw.js` (par exemple `cap-v2`) pour que les appareils des élèves récupèrent la nouvelle version.
+
+Une activité peut porter `facultatif: true` : elle s'affiche avec la mention « si on a le temps », pour aider l'adulte à tenir les 55 minutes. À réserver aux séances denses (quatre activités ou plus).
+
+## Chaque rentrée
+
+1. Ouvrez `data/actualites.js`, vérifiez chaque valeur à sa source (dates Parcoursup, calendrier du bac, lois), puis mettez à jour `verifie` et `annee`.
+2. Vérifiez les numéros nationaux et les adultes ressources dans `js/config.js`.
+3. Lancez les vérifications ci-dessous, puis augmentez `VERSION` dans `sw.js`.
+
+## Vérifier avant de publier
+
+| Commande | Ce qu'elle vérifie |
+| --- | --- |
+| `node tests/verifier.js` | Sans navigateur, en une seconde : champs obligatoires, rappels et passerelles vers des séances existantes, outils et clés uniques, réglages de chaque moteur (y compris avec `parFiliere`), liens en https, tableaux des fiches, situations de la boîte à outils, faits datés utilisés et sourcés. Signale aussi `data/actualites.js` s'il n'a pas été relu depuis un an. |
+| `python3 tests/navigateur.py` | Dans un navigateur invisible, trois fois (sans filière, CIEL, Métiers de la sécurité) : affiche chaque séance, fiche et outil, joue rapidement les activités, et signale toute erreur JavaScript. Il faut Python et Playwright (`pip install playwright`, puis `playwright install chromium`). |
+
+Les deux commandes s'arrêtent avec une erreur s'il y a un problème : à corriger avant de publier.
 
 ## Moteurs d'activités disponibles
 

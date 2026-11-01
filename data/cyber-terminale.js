@@ -10,6 +10,7 @@
 (function () {
   var S = window.CAP_SEANCES = window.CAP_SEANCES || [];
   var DUREE = "55 min";
+  var A = window.CAP_ACTU.texte; // faits datés : data/actualites.js
 
   function situation(titre, contexte, question, options, bilan) {
     var noeuds = { a: { contexte: contexte, question: question, choix: [] }, fin: { fin: { ok: true, titre: "À retenir :", texte: bilan } } };
@@ -32,7 +33,7 @@
       ou: "Sur mes réseaux, pour mes devoirs, en stage, face à un appel ou un message vocal suspect.",
       lie: "Fabriqué ou réel (EVARS Terminale, séance 1), agir de manière responsable (CPS Terminale, séance 2)."
     },
-    accroche: "Depuis le 2 août 2026, le règlement européen sur l'IA oblige à signaler un hypertrucage (« deepfake »). Pourtant, une grande partie des contenus générés circulent sans aucune mention. Comment faire la différence ?",
+    accroche: "Depuis le " + A("iaTransparence") + ", le règlement européen sur l'IA oblige à signaler un hypertrucage (« deepfake »). Pourtant, une grande partie des contenus générés circulent sans aucune mention. Comment faire la différence ?",
     activites: [{
       titre: "Les bons indices", moteur: "cartes",
       consigne: "Huit façons de repérer un contenu généré. Lesquelles restent fiables, lesquelles le sont de moins en moins ?",
@@ -81,8 +82,8 @@
     }, {
       titre: "Le deepfake n'est pas une blague", moteur: "quiz",
       config: { id: "cyber-tle-1-loi", questions: [
-        { type: "vf", enonce: "Faire un montage réaliste avec le visage d'un camarade et le diffuser « pour rire », sans son accord, est autorisé.", bonne: false, explication: "Depuis la loi du 21 mai 2024, diffuser sans son accord un contenu généré par IA représentant une personne est un délit, puni jusqu'à 2 ans de prison et 45 000 € d'amende quand il est diffusé en ligne." },
-        { type: "vf", enonce: "Un deepfake à caractère sexuel est puni encore plus sévèrement.", bonne: true, explication: "Jusqu'à 3 ans de prison et 75 000 € d'amende en ligne. La victime peut appeler le 3018, qui fait retirer le contenu." },
+        { type: "vf", enonce: "Faire un montage réaliste avec le visage d'un camarade et le diffuser « pour rire », sans son accord, est autorisé.", bonne: false, explication: "Depuis la loi du " + A("loiSren") + ", diffuser sans son accord un contenu généré par IA représentant une personne est un délit, puni jusqu'à " + A("peineDeepfake") + " quand il est diffusé en ligne." },
+        { type: "vf", enonce: "Un deepfake à caractère sexuel est puni encore plus sévèrement.", bonne: true, explication: "Jusqu'à " + A("peineDeepfakeSex") + " en ligne. La victime peut appeler le 3018, qui fait retirer le contenu." },
         { type: "vf", enonce: "Si le montage est clairement présenté comme un faux, avec l'accord de la personne, il n'y a pas de problème.", bonne: true, explication: "C'est l'absence d'accord et la tromperie qui posent problème." }
       ] }
     }, {
@@ -118,7 +119,7 @@
       blocs: [
         { type: "etapes", titre: "Vérifier une image, une vidéo ou une voix en cinq réflexes", items: ["Qui l'a publiée en premier ? Le compte est-il ancien, identifiable ?", "Recherche d'image inversée (ou d'une capture de la vidéo)", "Des médias fiables en parlent-ils ?", "La date et le lieu sont-ils cohérents ?", "Une mention « généré par IA » ? Son absence ne prouve rien."] },
         { type: "liste", titre: "Contre l'arnaque à la voix clonée", items: ["Je raccroche et je rappelle la personne sur son numéro habituel", "Je pose une question que seul le vrai proche connaît", "On convient en famille d'un mot de code"] },
-        { type: "liste", titre: "Ce que dit la loi", items: ["Depuis le 2 août 2026, un deepfake diffusé doit être signalé comme généré ou modifié par IA (règlement européen)", "Diffuser sans son accord un contenu généré représentant une personne est un délit (loi du 21 mai 2024)", "Un deepfake à caractère sexuel est puni plus sévèrement ; le 3018 aide à le faire retirer"] },
+        { type: "liste", titre: "Ce que dit la loi", items: ["Depuis le " + A("iaTransparence") + ", un deepfake diffusé doit être signalé comme généré ou modifié par IA (règlement européen)", "Diffuser sans son accord un contenu généré représentant une personne est un délit (loi du " + A("loiSren") + ")", "Un deepfake à caractère sexuel est puni plus sévèrement ; le 3018 aide à le faire retirer"] },
         { type: "tableau", titre: "Utiliser l'IA sans se faire avoir", colonnes: ["Je peux", "Je n'oublie pas"], lignes: [
           ["Reformuler, résumer, m'entraîner", "Je relis et je vérifie tout"],
           ["Comprendre une notion", "Elle peut inventer avec assurance : je recoupe"],
@@ -143,7 +144,7 @@
     verifie: [
       { type: "qcm", enonce: "Quel est l'indice le plus fiable pour savoir si une image est authentique ?", options: ["Compter les doigts", "Remonter à la source et recouper", "Regarder si elle est en haute définition"], bonne: 1, explication: "Les défauts visuels disparaissent ; la vérification de la source reste valable." },
       { type: "ouverte", enonce: "Quelle parade simple contre l'arnaque à la voix clonée ?", modele: "Raccrocher et rappeler la personne sur son numéro habituel ; convenir en famille d'un mot de code." },
-      { type: "vf", enonce: "Diffuser sans son accord un deepfake d'une personne est un délit.", bonne: true, explication: "Loi du 21 mai 2024 : jusqu'à 2 ans de prison et 45 000 € d'amende en ligne." },
+      { type: "vf", enonce: "Diffuser sans son accord un deepfake d'une personne est un délit.", bonne: true, explication: "Loi du " + A("loiSren") + " : jusqu'à " + A("peineDeepfake") + " en ligne." },
       { type: "ouverte", enonce: "Cite un usage de l'IA à éviter en stage.", modele: "Y coller des données de l'entreprise ou des clients ; faire rédiger son rapport de stage et le rendre tel quel." }
     ],
     plusLoin: [
@@ -154,7 +155,7 @@
     passerelles: ["evars-tle-1", "cps-tle-2"],
     adulte: {
       deroule: [
-        ["0-5 min", "Accroche", "Comment faire la différence entre un contenu réel et généré ?", "Présente l'obligation de transparence du 2 août 2026 et ses limites."],
+        ["0-5 min", "Accroche", "Comment faire la différence entre un contenu réel et généré ?", "Présente l'obligation de transparence du " + A("iaTransparence") + " et ses limites."],
         ["5-15 min", "Activité", "Classe huit indices : fiable ou de moins en moins fiable.", "Insiste sur la source et le recoupement."],
         ["15-30 min", "Activité", "Suit « La vidéo qui fait le buzz ».", "Élargit au clonage de voix et au mot de code familial."],
         ["30-35 min", "Activité", "Répond au vrai ou faux sur la loi.", "Rappelle le 3018 pour les victimes."],
@@ -392,7 +393,7 @@
         ] }
       }
     }, {
-      titre: "La charte informatique", moteur: "quiz",
+      titre: "La charte informatique", facultatif: true, moteur: "quiz",
       config: { id: "cyber-tle-3-charte", questions: [
         { type: "vf", enonce: "La charte informatique fixe les règles d'usage des outils de l'entreprise, et on la signe en arrivant.", bonne: true, explication: "Lis-la vraiment : elle dit ce qui est permis et interdit." },
         { type: "vf", enonce: "L'employeur peut contrôler l'usage professionnel des outils, dans un cadre fixé par la loi et annoncé aux salariés.", bonne: true, explication: "Il doit informer les salariés des contrôles mis en place." },

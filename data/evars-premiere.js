@@ -8,6 +8,7 @@
   var S = window.CAP_SEANCES = window.CAP_SEANCES || [];
   var FSJ = "Fil Santé Jeunes";
   var DUREE = "1 h 50 (2 × 55 min)";
+  var A = window.CAP_ACTU.texte; // faits datés : data/actualites.js
 
   function situation(titre, contexte, question, options, bilan) {
     var noeuds = { a: { contexte: contexte, question: question, choix: [] }, fin: { fin: { ok: true, titre: "À retenir :", texte: bilan } } };
@@ -177,7 +178,7 @@
     objectif: "Désirer et vouloir, donner ou refuser son consentement, savoir être libre et respecter les autres et leurs libertés.",
     rappel: { seance: "evars-1re-1", texte: "La dernière fois, tu as vu qu'une personne très alcoolisée ne peut pas consentir. Et en Seconde, que les signaux trompent et qu'il faut demander. Aujourd'hui, on va au bout de cette idée : qu'est-ce que le consentement, et que dit la loi ?" },
     aqcms: {
-      pourquoi: "Le consentement est la base de toute relation intime, et la loi le définit précisément depuis novembre 2025.",
+      pourquoi: "Le consentement est la base de toute relation intime, et la loi le définit précisément depuis " + A("loiConsentementMois") + ".",
       apport: "Exprimer mes envies et mes limites, reconnaître et respecter celles de l'autre, et savoir aider une victime.",
       ou: "Dans mes relations, entre amis, en soirée, au travail.",
       lie: "Dire non (CPS Seconde, séance 5), l'écoute (CPS Première, séance 2), la fête et les substances (séance 1)."
@@ -236,7 +237,7 @@
       }
     }],
     retenir: [
-      "Depuis novembre 2025, la loi définit le consentement : libre et éclairé, spécifique, préalable et révocable. Il ne peut pas se déduire du silence ou de l'absence de réaction.",
+      "Depuis " + A("loiConsentementMois") + ", la loi définit le consentement : libre et éclairé, spécifique, préalable et révocable. Il ne peut pas se déduire du silence ou de l'absence de réaction.",
       "Une hésitation vaut absence de consentement : on s'arrête.",
       "Le viol et l'agression sexuelle sont toujours des crimes ou des délits, y compris dans un couple. La victime n'est jamais responsable.",
       "Pour aider une victime : écouter, la croire, ne pas la juger, et alerter un adulte avec elle."
@@ -245,7 +246,7 @@
       titre: "Le consentement",
       intro: "Une fiche pour comprendre le consentement et ce que dit la loi.",
       blocs: [
-        { type: "tableau", titre: "Les mots de la loi (6 novembre 2025)", colonnes: ["Le consentement est…", "Ça veut dire…"], lignes: [
+        { type: "tableau", titre: "Les mots de la loi (" + A("loiConsentement") + ")", colonnes: ["Le consentement est…", "Ça veut dire…"], lignes: [
           ["Libre et éclairé", "Sans pression, sans menace, en étant en état de décider"],
           ["Spécifique", "Oui à une chose ne veut pas dire oui à tout"],
           ["Préalable", "Il se donne avant, pas après"],

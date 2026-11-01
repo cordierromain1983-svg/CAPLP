@@ -46,7 +46,7 @@
         ]
       }
     }, {
-      temps: 1, titre: "Pourquoi retoucher ?", moteur: "quiz",
+      temps: 1, titre: "Pourquoi retoucher ?", facultatif: true, moteur: "quiz",
       config: { id: "evars-2nde-1-retouche", questions: [
         { type: "qcm", enonce: "Quel indice peut montrer qu'une photo est retouchée ?", options: ["Une peau sans aucun grain ni marque", "Une photo prise de jour", "Une personne qui sourit"], bonne: 0, explication: "Autres indices : un fond déformé autour de la silhouette, des proportions irréalistes, une lumière parfaite partout." },
         { type: "qcm", enonce: "Pourquoi beaucoup d'influenceurs retouchent-ils leurs images ?", options: ["Pour vendre des produits et gagner des abonnés", "Parce que la loi l'impose", "Parce que les téléphones le font sans qu'on puisse l'éviter"], bonne: 0, explication: "Depuis 2023, un influenceur qui fait la promotion d'un produit doit signaler une image retouchée ou créée par intelligence artificielle." }

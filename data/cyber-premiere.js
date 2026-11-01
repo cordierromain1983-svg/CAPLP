@@ -53,7 +53,7 @@
         }]
       }
     }, {
-      titre: "Ce que l'appli remarque", moteur: "quiz",
+      titre: "Ce que l'appli remarque", facultatif: true, moteur: "quiz",
       consigne: "L'algorithme apprend de tout ce que tu fais. Vrai ou faux ?",
       config: { id: "cyber-1re-1-algo", questions: [
         { type: "vf", enonce: "Si je regarde une vidéo jusqu'au bout sans liker, l'appli ne le sait pas.", bonne: false, explication: "Le temps passé sur une vidéo est l'un des signaux les plus forts." },

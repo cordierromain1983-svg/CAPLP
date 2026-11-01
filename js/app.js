@@ -31,6 +31,7 @@
   };
   window.CapApp = CapApp;
 
+  function vider(el) { while (el.firstChild) el.removeChild(el.firstChild); }
   function pilier(id) { return PILIERS.filter(function (p) { return p.id === id; })[0]; }
   function seance(id) { return SEANCES.filter(function (s) { return s.id === id; })[0]; }
   function couleurs(p) {
@@ -267,8 +268,9 @@
     var zone = h("div", { class: "pile" });
     var sec = h("section", { class: "carte pile", "aria-labelledby": id },
       h("div", { class: "pile", style: "gap:4px" },
-        h("span", { class: "etiquette", text: surtitre || "Activité" }),
+        h("span", { class: "etiquette", text: (surtitre || "Activité") + (a.facultatif ? " · si on a le temps" : "") }),
         h("h2", { id: id, class: "titre-bloc", text: a.titre })),
+      a.facultatif ? h("p", { class: "note", text: "Activité facultative : on peut la garder pour la fin, ou la faire seul plus tard." }) : null,
       a.consigne ? h("p", { class: "texte-doux", text: a.consigne }) : null,
       noteFiliere(a),
       zone);
@@ -372,32 +374,80 @@
   function tousLesOutils() {
     var out = [];
     SEANCES.forEach(function (s) {
+      var p = pilier(s.pilier);
+      if (!p || !p.actif) return;
       (s.activites || []).concat(s.traces || []).forEach(function (a) {
         if (a.outil) out.push({ id: a.outil.id, nom: a.outil.nom, description: a.outil.description, bloc: a, seance: s });
       });
     });
     return out;
   }
+  function lienOutil(o, avecPilier) {
+    var p = pilier(o.seance.pilier);
+    return h("a", { class: "seance-lien", href: "#/outil/" + o.id },
+      h("span", { class: "pile", style: "gap:2px;flex:1" },
+        avecPilier ? h("span", { class: "s", style: "font-weight:700;color:" + p.couleur, text: p.nom + " · " + nomNiveau(o.seance.niveau) }) : null,
+        h("span", { class: "t", text: o.nom }),
+        h("span", { class: "s", text: o.description })),
+      icone("fleche"));
+  }
+  // Trois façons de ranger les outils : par situation (par défaut), par niveau, par pilier.
   function pageOutils() {
     couleurs(null);
     var page = h("div", { class: "page" });
     page.appendChild(h("header", { class: "entete" }, h("h1", { class: "marque", text: "Ma boîte à outils" }), boutonAide()));
     page.appendChild(h("p", { class: "texte-doux", text: "Les outils que tu peux utiliser quand tu veux, en classe, en stage ou chez toi." }));
-    var parPilier = {};
-    tousLesOutils().forEach(function (o) { (parPilier[o.seance.pilier] = parPilier[o.seance.pilier] || []).push(o); });
-    Object.keys(parPilier).forEach(function (pid) {
-      var p = pilier(pid);
-      page.appendChild(h("h2", { class: "titre-bloc", style: "color:" + p.couleur, text: p.nom }));
-      var pile = h("div", { class: "pile" });
-      parPilier[pid].forEach(function (o) {
-        pile.appendChild(h("a", { class: "seance-lien", href: "#/outil/" + o.id },
-          h("span", { class: "pile", style: "gap:2px;flex:1" },
-            h("span", { class: "t", text: o.nom }),
-            h("span", { class: "s", text: o.description })),
-          icone("fleche")));
+    var outils = tousLesOutils(), parId = {};
+    outils.forEach(function (o) { parId[o.id] = o; });
+    var situations = (window.CAP_SITUATIONS || []).map(function (st) {
+      return { id: st.id, nom: st.nom, outils: st.outils.map(function (x) { return parId[x]; }).filter(Boolean) };
+    }).filter(function (st) { return st.outils.length; });
+    var VUES = [["situation", "Par situation"], ["niveau", "Par niveau"], ["pilier", "Par pilier"]];
+    var vue = Store.get("outils-vue", "situation");
+    if (vue === "situation" && !situations.length) vue = "pilier";
+    var choixSit = Store.get("outils-situation", situations.length ? situations[0].id : "");
+    var barre = h("div", { class: "ligne", role: "group", "aria-label": "Ranger les outils" });
+    var zone = h("div", { class: "pile" });
+    function rendu() {
+      vider(barre); vider(zone);
+      VUES.forEach(function (v) {
+        if (v[0] === "situation" && !situations.length) return;
+        barre.appendChild(h("button", { class: "puce" + (vue === v[0] ? " active" : ""), type: "button", "aria-pressed": vue === v[0] ? "true" : "false", text: v[1],
+          on: { click: function () { vue = v[0]; Store.set("outils-vue", vue); rendu(); } } }));
       });
-      page.appendChild(pile);
-    });
+      if (vue === "situation") {
+        zone.appendChild(h("p", { class: "titre-bloc", style: "font-size:16px", text: "Qu'est-ce qui t'arrive ?" }));
+        var puces = h("div", { class: "pile", role: "group", "aria-label": "Situations", style: "gap:6px" });
+        situations.forEach(function (st) {
+          var actif = st.id === choixSit;
+          puces.appendChild(h("button", { class: "option" + (actif ? " choisi" : ""), type: "button", "aria-pressed": actif ? "true" : "false",
+            on: { click: function () { choixSit = st.id; Store.set("outils-situation", st.id); rendu(); var l = document.getElementById("outils-liste"); if (l) l.scrollIntoView({ behavior: "smooth", block: "start" }); } } },
+            h("span", { style: "flex:1", text: st.nom }), h("span", { class: "texte-doux", text: String(st.outils.length) })));
+        });
+        zone.appendChild(puces);
+        var st = situations.filter(function (x) { return x.id === choixSit; })[0] || situations[0];
+        zone.appendChild(h("h2", { id: "outils-liste", class: "titre-bloc", text: st.nom }));
+        zone.appendChild(h("div", { class: "pile" }, st.outils.map(function (o) { return lienOutil(o, true); })));
+      } else if (vue === "niveau") {
+        (NIVEAUX || []).forEach(function (n) {
+          var liste = outils.filter(function (o) { return o.seance.niveau === n.id; });
+          if (!liste.length) return;
+          zone.appendChild(h("h2", { class: "titre-bloc", text: n.nom + " " + n.theme }));
+          zone.appendChild(h("div", { class: "pile" }, liste.map(function (o) { return lienOutil(o, true); })));
+        });
+      } else {
+        var parPilier = {};
+        outils.forEach(function (o) { (parPilier[o.seance.pilier] = parPilier[o.seance.pilier] || []).push(o); });
+        Object.keys(parPilier).forEach(function (pid) {
+          var p = pilier(pid);
+          zone.appendChild(h("h2", { class: "titre-bloc", style: "color:" + p.couleur, text: p.nom }));
+          zone.appendChild(h("div", { class: "pile" }, parPilier[pid].map(function (o) { return lienOutil(o, false); })));
+        });
+      }
+    }
+    page.appendChild(barre);
+    page.appendChild(zone);
+    rendu();
     // Les fiches ressources, regroupées par pilier
     var fiches = SEANCES.filter(function (s) { return s.ressource; });
     if (fiches.length) {
