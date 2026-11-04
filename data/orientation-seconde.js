@@ -114,6 +114,7 @@
     },
     traces: [{
       titre: "Mon portrait d'orientation", moteur: "carnet",
+      rendre: true,
       outil: { id: "portrait-orientation", nom: "Mon portrait d'orientation", description: "Mes goûts, mes qualités, ce qui compte pour moi au travail." },
       config: {
         cle: "portrait-orientation", titreDoc: "Mon portrait d'orientation",
@@ -346,7 +347,7 @@
       ]
     },
     traces: [{
-      titre: "Mon point à vérifier", moteur: "carnet",
+      titre: "Mon point à vérifier", moteur: "carnet", rendre: true,
       config: {
         cle: "pistes-a-verifier", titreDoc: "Mes pistes et ce qu'il faut vérifier",
         afficher: { titre: "Tes pistes et ton portrait", sources: ["portrait-orientation"] },

@@ -104,6 +104,7 @@
     },
     traces: [{
       titre: "Mon bilan de stage", moteur: "carnet",
+      rendre: true,
       outil: { id: "bilan-stage", nom: "Mon bilan de stage", description: "Deux points forts, un point à travailler, ce que le stage m'a appris sur mon orientation." },
       config: {
         cle: "bilan-stage", titreDoc: "Mon bilan de stage",

@@ -88,6 +88,7 @@
     },
     traces: [{
       titre: "Mon CV", moteur: "carnet",
+      rendre: true,
       outil: { id: "mon-cv", nom: "Mon CV", description: "Mon CV d'une page, prêt à imprimer." },
       config: {
         cle: "mon-cv", titreDoc: "Curriculum vitae",
@@ -105,6 +106,7 @@
       }
     }, {
       titre: "Ma lettre type", moteur: "carnet",
+      rendre: true,
       outil: { id: "lettre-type", nom: "Ma lettre type", description: "Ma lettre en trois paragraphes, à adapter à chaque destinataire." },
       config: {
         cle: "lettre-type", titreDoc: "Lettre de motivation",
@@ -239,7 +241,7 @@
       ]
     },
     traces: [{
-      titre: "Mes questions pour le forum des anciens", moteur: "carnet",
+      titre: "Mes questions pour le forum des anciens", moteur: "carnet", rendre: true,
       config: {
         cle: "questions-forum", titreDoc: "Mes questions pour le forum des anciens",
         afficher: { titre: "Tes contacts pros", sources: ["contacts-pros"], vide: "Tu n'as pas encore noté de contacts pros. Après le forum, ajoute les anciens rencontrés dans « Mes contacts pros »." },
