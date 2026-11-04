@@ -1,6 +1,6 @@
 /*
  * Cap'Autonomie — navigation et pages
- * Routes : #/  #/pilier/cps  #/seance/<id>  #/outils  #/outil/<id>  #/espace  #/aide
+ * Routes : #/  #/pilier/cps  #/seance/<id>  #/outils  #/outil/<id>  #/espace  #/aide  #/confidentialite
  */
 (function () {
   var main = document.getElementById("contenu");
@@ -16,12 +16,15 @@
       document.body.appendChild(t);
       setTimeout(function () { t.remove(); }, 2600);
     },
-    imprimer: function (titre, noeud) {
+    imprimer: function (titre, noeud, opts) {
+      opts = opts || {};
       var doc = document.getElementById("doc-impression");
       vider(doc);
       doc.appendChild(h("h1", { text: titre }));
       doc.appendChild(h("p", { class: "sous", text: "Cap'Autonomie · " + new Date().toLocaleDateString("fr-FR") }));
+      if (opts.rendre) doc.appendChild(h("p", { class: "sous", text: "Nom, prénom : ................................   Classe : ............" }));
       doc.appendChild(noeud);
+      if (opts.rendre === false) doc.appendChild(h("p", { class: "sous", style: "margin-top:18px", text: "Document personnel : tu n'as jamais à le rendre." }));
       document.body.classList.add("imprime-doc");
       setTimeout(function () {
         window.print();
@@ -103,7 +106,7 @@
       else { attrs["aria-disabled"] = "true"; grille.appendChild(h("div", attrs, contenu)); }
     });
     page.appendChild(grille);
-    page.appendChild(h("p", { class: "note", text: "Tout ce que tu écris reste sur cet appareil. Rien n'est envoyé sur internet." }));
+    page.appendChild(h("p", { class: "note" }, "Tout ce que tu écris reste sur cet appareil. Rien n'est envoyé sur internet. ", h("a", { href: "#/confidentialite" }, "Confidentialité et mentions légales")));
     return page;
   }
   function nomNiveau(id) { var n = NIVEAUX.filter(function (x) { return x.id === id; })[0]; return n ? n.nom : id; }
@@ -273,9 +276,16 @@
       a.facultatif ? h("p", { class: "note", text: "Activité facultative : on peut la garder pour la fin, ou la faire seul plus tard." }) : null,
       a.consigne ? h("p", { class: "texte-doux", text: a.consigne }) : null,
       noteFiliere(a),
+      surtitre ? noteRendre(a) : null,
       zone);
-    Moteurs[a.moteur](zone, configFiliere(a), { fini: fini });
+    Moteurs[a.moteur](zone, configFiliere(a), { fini: fini, rendre: surtitre ? !!a.rendre : undefined });
     return sec;
+  }
+  // Une trace est soit « à rendre si le professeur le demande », soit « pour toi seul »
+  function noteRendre(a) {
+    return a.rendre
+      ? h("p", { class: "note-rendre" }, h("strong", { text: "À rendre si ton professeur le demande. " }), "Enregistre-la en PDF et dépose-la sur l'ENT.")
+      : h("p", { class: "note-rendre prive" }, h("strong", { text: "Pour toi seul. " }), "Tu n'as jamais à rendre cette trace.");
   }
   // Situations propres à la filière de l'élève (choisie dans « Mon espace »)
   function filieres() { return (window.CAP_CONFIG && CAP_CONFIG.filieres) || []; }
@@ -496,8 +506,10 @@
       h("p", { class: "meta", text: o.description })));
     var corps = h("div", { class: "page" });
     var zone = h("div", { class: "carte pile" });
+    var trace = (o.seance.traces || []).indexOf(o.bloc) >= 0;
+    if (trace) zone.appendChild(noteRendre(o.bloc));
     corps.appendChild(zone);
-    Moteurs[o.bloc.moteur](zone, o.bloc.config, {});
+    Moteurs[o.bloc.moteur](zone, o.bloc.config, { rendre: trace ? !!o.bloc.rendre : undefined });
     corps.appendChild(h("a", { class: "btn secondaire", href: "#/seance/" + o.seance.id, style: "align-self:flex-start" }, "Revoir la séance", icone("fleche")));
     page.appendChild(corps);
     return page;
@@ -543,7 +555,7 @@
       var data = Store.get(o.bloc.config.cle, null);
       var rempli = data && (Array.isArray(data) ? data.length : (data.choix ? data.choix.length : Object.keys(data).some(function (k) { return (data[k] || "").toString().trim(); })));
       pile.appendChild(h("a", { class: "seance-lien", href: "#/outil/" + o.id },
-        h("span", { class: "pile", style: "gap:2px;flex:1" }, h("span", { class: "t", text: o.nom }), h("span", { class: "s", text: rempli ? "Commencé" : "Pas encore commencé" })),
+        h("span", { class: "pile", style: "gap:2px;flex:1" }, h("span", { class: "t", text: o.nom }), h("span", { class: "s", text: (rempli ? "Commencé" : "Pas encore commencé") + ((o.seance.traces || []).indexOf(o.bloc) >= 0 ? (o.bloc.rendre ? " · à rendre si on te le demande" : " · pour toi seul") : "") })),
         icone("fleche")));
     });
     page.appendChild(pile);
@@ -573,7 +585,8 @@
       h("button", { class: "btn danger petit", type: "button", style: "align-self:flex-start", on: { click: function () {
         if (!confirm("Effacer toutes tes données de cet appareil ? Cette action est définitive.")) return;
         Store.toutEffacer(); CapApp.toast("Tout a été effacé."); route();
-      } } }, icone("poubelle"), "Tout effacer de cet appareil")));
+      } } }, icone("poubelle"), "Tout effacer de cet appareil"),
+      h("p", { class: "note" }, "Sur un ordinateur partagé (CDI, salle informatique), efface tes données avant de partir. ", h("a", { href: "#/confidentialite" }, "Confidentialité et mentions légales"))));
     return page;
   }
 
@@ -606,6 +619,56 @@
     return page;
   }
 
+  // ---------- Confidentialité et mentions légales ----------
+  function pageConfidentialite() {
+    couleurs(null);
+    var L = CONFIG.legal || {};
+    var page = h("div", { class: "page" });
+    function bloc(titre) { var sec = h("section", { class: "carte pile" }, h("h2", { class: "titre-bloc", text: titre })); for (var i = 1; i < arguments.length; i++) if (arguments[i]) sec.appendChild(arguments[i]); return sec; }
+    function liste(items) { return h("ul", { class: "fiche-liste" }, items.map(function (x) { return h("li", null, x); })); }
+    function p(t) { return h("p", null, t); }
+    page.appendChild(h("button", { class: "retour", type: "button", style: "border:none;background:none;padding:0;cursor:pointer;align-self:flex-start",
+      on: { click: function () { if (history.length > 1) history.back(); else location.hash = "#/"; } } }, icone("retour"), "Retour"));
+    page.appendChild(h("h1", { class: "titre-page", text: "Confidentialité et mentions légales" }));
+    page.appendChild(h("div", { class: "carte pile", style: "background:#E8F3E6;border-color:transparent" },
+      h("h2", { class: "titre-bloc", text: "En bref" }),
+      liste(["Cap'Autonomie ne collecte aucune donnée personnelle : pas de compte, pas de nom, pas de statistiques, pas de publicité.",
+        "Ce que tu écris reste sur ton appareil. Personne d'autre ne peut le lire, ni ton professeur, ni l'établissement.",
+        "Tu peux tout effacer à tout moment, dans « Mon espace »."])));
+    page.appendChild(bloc("Ce qui est enregistré sur ton appareil",
+      p("Pour que l'appli fonctionne, ton navigateur garde sur ton appareil (stockage local) : ta progression, tes traces et tes carnets, ton niveau, ta filière si tu l'as indiquée, et la dernière séance ouverte."),
+      p("Ce stockage sert uniquement à faire fonctionner ce que tu utilises : il ne demande pas de consentement, et ce ne sont pas des cookies publicitaires."),
+      p("Le testeur de mot de passe n'enregistre rien : tout est calculé sur ton appareil."),
+      h("a", { class: "btn secondaire petit", href: "#/espace", style: "align-self:flex-start" }, "Voir ou effacer mes données")));
+    page.appendChild(bloc("Quand tu rends une trace à ton professeur",
+      liste(["Certaines traces portent la mention « À rendre si ton professeur le demande ». Tu les enregistres en PDF et tu les déposes sur l'ENT.",
+        "Les traces « Pour toi seul » ne te seront jamais demandées.",
+        "L'établissement utilise ce que tu rends uniquement pour le suivi de ton travail, et ne le garde pas au-delà de l'année scolaire.",
+        "Si un écrit montre que toi ou quelqu'un d'autre êtes en danger, l'adulte doit agir pour vous protéger : il ne peut pas promettre le secret."])));
+    page.appendChild(bloc("Ordinateur partagé",
+      p("Au CDI ou en salle informatique, tes données restent sur l'ordinateur tant que tu ne les effaces pas. Avant de partir, va dans « Mon espace » puis « Tout effacer de cet appareil ». Tu peux d'abord télécharger ta sauvegarde.")));
+    page.appendChild(bloc("Hébergement",
+      p("L'appli est hébergée par " + (L.hebergeur || "GitHub Pages, GitHub Inc., 88 Colin P Kelly Jr Street, San Francisco, CA 94107, États-Unis") + "."),
+      p("Comme tout hébergeur, il reçoit techniquement l'adresse IP des visiteurs pour afficher les pages. Ces transferts vers les États-Unis sont encadrés par le cadre de protection des données entre l'Union européenne et les États-Unis.")));
+    page.appendChild(bloc("Sites extérieurs",
+      p("Les liens « Pour aller plus loin » ouvrent d'autres sites (CNIL, Fil Santé Jeunes, Cybermalveillance.gouv.fr…), qui ont leurs propres règles de confidentialité."),
+      p("Deux tableaux d'EVARS Terminale (Hayez, Klimt) s'affichent pour l'instant depuis Wikimedia Commons, qui reçoit alors ton adresse IP.")));
+    page.appendChild(bloc("Tes droits",
+      p("Le règlement général sur la protection des données (RGPD) te donne des droits sur tes données. Comme l'appli ne collecte rien, l'établissement n'a aucune donnée te concernant venant de Cap'Autonomie."),
+      p("Pour toute question : " + (L.contactDPO || "[contact du délégué à la protection des données]") + ". Tu peux aussi adresser une réclamation à la CNIL (cnil.fr).")));
+    page.appendChild(bloc("Mentions légales",
+      liste([
+        "Éditeur : " + (L.editeur || CONFIG.etablissement) + (L.adresse ? ", " + L.adresse : ""),
+        "Directeur de la publication : " + (L.directeur || "[chef d'établissement]"),
+        "Conception et contenus : " + (L.conception || "[nom de l'enseignant]"),
+        "Contact : " + (L.contact || "[adresse de contact]"),
+        "Police Atkinson Hyperlegible : Braille Institute of America, licence SIL Open Font License 1.1",
+        "Œuvres d'art : domaine public, via Wikimedia Commons",
+        "Dernière mise à jour : " + (L.miseAJour || "novembre 2026")
+      ])));
+    return page;
+  }
+
   function pageIntrouvable() {
     couleurs(null);
     return h("div", { class: "page" }, h("h1", { class: "titre-page", text: "Page introuvable" }), h("a", { class: "btn", href: "#/", text: "Revenir à l'accueil" }));
@@ -624,6 +687,7 @@
       case "fiche": vue = pageFiche(parts[1]); nav = "outils"; break;
       case "espace": vue = pageEspace(); nav = "espace"; break;
       case "aide": vue = pageAide(); nav = ""; break;
+      case "confidentialite": vue = pageConfidentialite(); nav = ""; break;
       default: vue = pageIntrouvable();
     }
     vider(main);

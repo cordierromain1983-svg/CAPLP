@@ -302,6 +302,7 @@
     ],
     traces: [{
       titre: "Le CV de mes réussites", moteur: "liste",
+      rendre: true,
       outil: { id: "cv-reussites", nom: "Le CV de mes réussites", description: "Mes réussites et les qualités qu'elles montrent." },
       config: {
         cle: "cv-reussites", titreDoc: "Le CV de mes réussites", titreListe: "Mes réussites", bouton: "Ajouter cette réussite",

@@ -1,8 +1,8 @@
 /* Service worker : permet d'utiliser Cap'Autonomie hors ligne une fois ouvert une première fois.
    Après chaque modification des fichiers, augmentez le numéro de VERSION pour forcer la mise à jour. */
-var VERSION = "cap-v13";
+var VERSION = "cap-v14";
 var FICHIERS = [
-  "./", "index.html", "css/app.css", "icone.svg", "manifest.webmanifest",
+  "./", "index.html", "css/app.css", "fonts/atkinson-hyperlegible-latin-400-normal.woff2", "fonts/atkinson-hyperlegible-latin-700-normal.woff2", "fonts/atkinson-hyperlegible-latin-400-italic.woff2", "icone.svg", "manifest.webmanifest",
   "js/config.js", "js/store.js", "js/engines.js", "js/fiches.js", "js/app.js",
   "data/piliers.js", "data/actualites.js", "data/situations.js", "data/cps-seconde.js", "data/cps-premiere.js", "data/cps-terminale.js", "data/evars-seconde.js", "data/evars-premiere.js", "data/evars-terminale.js", "data/cyber-seconde.js", "data/cyber-premiere.js", "data/cyber-terminale.js", "data/orientation-seconde.js", "data/orientation-premiere.js", "data/orientation-terminale.js"
 ];

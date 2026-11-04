@@ -89,6 +89,14 @@ Une séance peut être découpée en deux temps : champ `temps` de la séance (t
 
 Chaque séance a un champ `passerelles` : la liste des identifiants des séances d'autres piliers qui lui sont liées (par exemple `["cps-2nde-3"]`). Il suffit d'écrire le lien dans un sens : le lien retour s'affiche automatiquement. Les liens apparaissent en haut de la séance (pastilles « Aussi dans : ») et dans le bloc « Voir aussi dans… ». Les liens EVARS ↔ CPS et Cyber ↔ CPS / EVARS sont déjà en place.
 
+### Traces à rendre ou personnelles
+
+Une trace peut porter `rendre: true` : l'élève voit « À rendre si ton professeur le demande » et un bouton « Enregistrer en PDF pour le rendre » (avec une ligne nom, prénom, classe). Sans ce champ, la trace est « Pour toi seul » : elle ne doit jamais être demandée, car elle peut toucher à la santé, à la vie affective ou aux convictions (données sensibles au sens du RGPD).
+
+### Confidentialité (RGPD)
+
+L'appli ne collecte aucune donnée : pas de compte, pas de statistiques, aucun appel à un serveur tiers (la police est hébergée dans `fonts/`). Seules exceptions : les liens « Pour aller plus loin » et les deux tableaux d'EVARS Terminale, encore affichés depuis Wikimedia Commons. La page `#/confidentialite` reprend tout cela et contient les mentions légales : complétez le bloc `legal` de `js/config.js` et faites-la relire par le délégué à la protection des données.
+
 ### Situations par filière
 
 Une activité peut avoir un champ `parFiliere` : `{ ciel: { cas: [...] }, securite: { cartes: [...] } }`. Si l'élève a choisi sa filière dans « Mon espace », les situations (`cas` d'un scénario) ou les cartes (première manche d'un jeu de cartes) de sa filière s'ajoutent. Toute autre liste du même nom s'ajoute aussi (`sujets` d'un binôme, `questions` d'un quiz, `cartes` d'un tri…), et `config: {...}` remplace des réglages (par exemple la `note` d'une jauge ou les `cartes` d'un choix). Les filières sont déclarées dans `js/config.js` (`filieres`). Exemples : Cyber Terminale, séance 3 ; Orientation Seconde, séances 2 et 3.

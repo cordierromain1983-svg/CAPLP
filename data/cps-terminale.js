@@ -323,6 +323,7 @@
     },
     traces: [{
       titre: "Mes engagements (portfolio)", moteur: "liste",
+      rendre: true,
       outil: { id: "mes-engagements", nom: "Mes engagements", description: "Mes expériences d'engagement et les compétences qu'elles montrent." },
       config: {
         cle: "mes-engagements", titreDoc: "Mes engagements", titreListe: "Mes engagements", bouton: "Ajouter à mon portfolio",
@@ -513,6 +514,7 @@
     },
     traces: [{
       titre: "Mon engagement pour l'après-bac", moteur: "liste",
+      rendre: true,
       outil: { id: "engagement-apres-bac", nom: "Mon engagement pour l'après-bac", description: "Mon objectif, ma première étape, ma date et qui peut m'aider." },
       config: {
         cle: "engagement-apres-bac", titreDoc: "Mon engagement pour l'après-bac", titreListe: "Mes engagements", bouton: "M'engager",

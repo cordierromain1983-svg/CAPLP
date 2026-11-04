@@ -247,6 +247,7 @@
     },
     traces: [{
       titre: "Ma charte pour le groupe de classe", moteur: "carnet",
+      rendre: true,
       outil: { id: "charte-groupe", nom: "Ma charte pour le groupe de classe", description: "Trois règles pour notre groupe, et mon geste de témoin." },
       config: {
         cle: "charte-groupe", titreDoc: "Ma charte pour le groupe de classe",
@@ -404,6 +405,7 @@
     },
     traces: [{
       titre: "Mon réflexe anti-arnaque", moteur: "carnet",
+      rendre: true,
       outil: { id: "reflexe-anti-arnaque", nom: "Mon réflexe anti-arnaque", description: "Les trois questions que je me pose avant de cliquer, payer ou donner un code." },
       config: {
         cle: "reflexe-anti-arnaque", titreDoc: "Mon réflexe anti-arnaque",

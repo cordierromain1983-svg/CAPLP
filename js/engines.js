@@ -445,8 +445,8 @@
           bloc.appendChild(h("h2", { style: "font-size:15px;margin-top:14px", text: c.label }));
           bloc.appendChild(h("p", { class: "texte-sortie", text: data[c.id] }));
         });
-        CapApp.imprimer(cfg.titreDoc || "Mon carnet", bloc);
-      } } }, icone("imprime"), "Imprimer ou PDF")));
+        CapApp.imprimer(cfg.titreDoc || "Mon carnet", bloc, { rendre: ctx && ctx.rendre });
+      } } }, icone("imprime"), ctx && ctx.rendre ? "Enregistrer en PDF pour le rendre" : "Imprimer ou PDF")));
   }
 
   // ---------- Reprendre ce que l'élève a déjà noté dans un autre outil ----------
@@ -553,7 +553,7 @@
       zone.appendChild(form);
 
       var titre = h("div", { class: "entre", style: "margin-top:8px" }, h("h4", { class: "titre-bloc", style: "font-size:16px;margin:0", text: (cfg.titreListe || "Mes fiches") + " (" + entrees.length + ")" }));
-      if (entrees.length) titre.appendChild(h("button", { class: "btn secondaire petit", type: "button", on: { click: imprimer } }, icone("imprime"), "Imprimer ou PDF"));
+      if (entrees.length) titre.appendChild(h("button", { class: "btn secondaire petit", type: "button", on: { click: imprimer } }, icone("imprime"), ctx && ctx.rendre ? "Enregistrer en PDF pour le rendre" : "Imprimer ou PDF"));
       zone.appendChild(titre);
       if (!entrees.length) zone.appendChild(h("p", { class: "vide", text: "Rien pour l'instant." }));
       entrees.forEach(function (e, k) {
@@ -577,7 +577,7 @@
           cfg.champs.forEach(function (c) { if (e[c.id]) bloc.appendChild(h("p", null, h("strong", { text: c.label + " : " }), e[c.id])); });
         }
       });
-      CapApp.imprimer(cfg.titreDoc || "Mes fiches", bloc);
+      CapApp.imprimer(cfg.titreDoc || "Mes fiches", bloc, { rendre: ctx && ctx.rendre });
     }
     rendu();
   }
@@ -1058,7 +1058,7 @@
       var centre = etat.etiquettes.filter(function (e) { return e.dans.length >= 3; }).map(function (e) { return e.texte; });
       bloc.appendChild(h("h2", { style: "font-size:15px;margin-top:12px", text: "Ma piste (au centre)" }));
       bloc.appendChild(h("p", { text: centre.length ? centre.join(", ") : "…" }));
-      CapApp.imprimer(cfg.titreDoc || "Mon projet en cercles", bloc);
+      CapApp.imprimer(cfg.titreDoc || "Mon projet en cercles", bloc, { rendre: ctx && ctx.rendre });
     }
     rendu();
   }

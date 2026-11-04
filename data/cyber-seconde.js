@@ -119,6 +119,7 @@
     },
     traces: [{
       titre: "Mon journal de vérification", moteur: "liste",
+      rendre: true,
       outil: { id: "journal-verification", nom: "Mon journal de vérification", description: "Les informations que j'ai vérifiées, et mon verdict." },
       config: {
         cle: "journal-verification", titreDoc: "Mon journal de vérification", bouton: "Ajouter au journal",

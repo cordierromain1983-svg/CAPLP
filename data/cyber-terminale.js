@@ -258,6 +258,7 @@
     },
     traces: [{
       titre: "Mon profil pro", moteur: "carnet",
+      rendre: true,
       outil: { id: "profil-pro", nom: "Mon profil pro", description: "Ma présentation professionnelle en cinq lignes et mes actions de nettoyage." },
       config: {
         cle: "profil-pro", titreDoc: "Mon profil pro",
@@ -436,6 +437,7 @@
     },
     traces: [{
       titre: "Mes cinq règles de cybersécurité en stage", moteur: "carnet",
+      rendre: true,
       outil: { id: "regles-stage", nom: "Mes règles de cybersécurité en stage", description: "Mes cinq règles à emporter en PFMP." },
       config: {
         cle: "regles-stage", titreDoc: "Mes cinq règles de cybersécurité en stage",

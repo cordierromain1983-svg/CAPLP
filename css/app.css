@@ -1,5 +1,9 @@
 /* Cap'Autonomie — feuille de style
-   Police : Atkinson Hyperlegible (conçue pour la lisibilité), repli sur la police système hors ligne. */
+   Police : Atkinson Hyperlegible (conçue pour la lisibilité), hébergée avec l'appli, repli sur la police système. */
+/* Police hébergée avec l'appli (aucun appel à un serveur tiers). Licence SIL OFL 1.1 : fonts/OFL.txt */
+@font-face { font-family: "Atkinson Hyperlegible"; font-style: normal; font-weight: 400; font-display: swap; src: url("../fonts/atkinson-hyperlegible-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Atkinson Hyperlegible"; font-style: normal; font-weight: 700; font-display: swap; src: url("../fonts/atkinson-hyperlegible-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "Atkinson Hyperlegible"; font-style: italic; font-weight: 400; font-display: swap; src: url("../fonts/atkinson-hyperlegible-latin-400-italic.woff2") format("woff2"); }
 
 :root {
   --sol: #F7F7F4;
@@ -334,3 +338,5 @@ table.fiche-table tr:last-child th, table.fiche-table tr:last-child td { border-
 .mdp-criteres .ok { color: #1E7A3C; }
 .mdp-criteres .ko { color: #8A2A14; }
 .filiere-note { font-size: 14px; }
+.note-rendre { font-size: 14px; margin: 0; padding: 8px 12px; border-radius: 10px; background: #E8F3E6; color: #1E4D1E; }
+.note-rendre.prive { background: #EEF1F5; color: #2A2F36; }

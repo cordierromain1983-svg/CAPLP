@@ -25,6 +25,18 @@ window.CAP_CONFIG = {
     { nom: "Conseil de la vie lycéenne (CVL)", theme: "Vie du lycée", age: "Tous les lycéens", description: "Se présenter aux élections et porter les projets des élèves. Renseigne-toi auprès du CPE.", url: "" }
   ],
 
+  // Mentions légales et confidentialité (page « Confidentialité et mentions légales »).
+  // L'éditeur est l'établissement ; le directeur de la publication est en général le chef d'établissement.
+  legal: {
+    editeur: "[Nom de votre lycée]",
+    adresse: "[Adresse postale du lycée]",
+    directeur: "[Nom du chef d'établissement]",
+    conception: "[Nom de l'enseignant qui a conçu l'appli]",
+    contact: "[Adresse de contact, par exemple via l'ENT]",
+    contactDPO: "[Contact du délégué à la protection des données de l'établissement ou de la DDEC]",
+    miseAJour: "novembre 2026"
+  },
+
   // Filières de l'établissement : certaines séances (Cyber Terminale, séance 3)
   // ajoutent des situations propres à ces métiers. L'élève choisit dans « Mon espace ».
   // Les identifiants "ciel" et "securite" sont utilisés par les séances : ne les changez pas.

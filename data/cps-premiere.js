@@ -134,6 +134,7 @@
     },
     traces: [{
       titre: "Ma consigne claire", moteur: "carnet",
+      rendre: true,
       outil: { id: "consigne-claire", nom: "Ma consigne claire", description: "Transformer une consigne floue en consigne précise." },
       config: {
         cle: "consigne-claire", titreDoc: "Ma consigne claire",
