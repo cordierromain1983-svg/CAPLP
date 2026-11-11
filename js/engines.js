@@ -1208,10 +1208,166 @@
     window.addEventListener("hashchange", function vide() { champ.value = ""; window.removeEventListener("hashchange", vide); });
   }
 
+  // =====================================================================
+  // 18-20. OUTILS D'ARGENT (EDUCFI) : tout est calculé sur l'appareil.
+  // =====================================================================
+  function euros(x) {
+    var n = Math.round(x * 100) / 100;
+    return n.toLocaleString("fr-FR", { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 }) + " €";
+  }
+  function nombre(v) { var n = parseFloat(String(v).replace(",", ".").replace(/\s/g, "")); return isNaN(n) ? 0 : n; }
+  function champEuro(id, label, valeur, maj, aide) {
+    var inp = h("input", { type: "number", id: id, inputmode: "decimal", min: "0", step: "0.01", value: String(valeur), on: { input: maj } });
+    return { input: inp, noeud: h("label", { class: "champ", for: id }, h("span", null, label, aide ? h("span", { class: "aide", text: " · " + aide }) : null), inp) };
+  }
+  function ligneTotal(lib, val, fort) { return h("div", { class: "entre", style: "align-items:baseline" + (fort ? ";font-weight:700" : "") }, h("span", { text: lib }), h("span", { style: "white-space:nowrap", text: val })); }
+
+  // ---------- 18. SIMULATEUR DE BUDGET ----------
+  // config : { id, cle (pour « mon budget », facultatif), qui, ressources:[{id,label,montant,aide?}],
+  //            depenses:[{id,label,montant,type:"fixe"|"variable",aide?}], imprevu:{label,montant}, conseil }
+  function budget(zone, cfg, ctx) {
+    var mode = "exemple", imprevu = false;
+    var perso = cfg.cle ? Store.get(cfg.cle, null) : null;
+    var corps = h("div", { class: "pile" });
+    var onglets = null;
+    if (cfg.cle) {
+      var b1 = h("button", { class: "btn secondaire petit", type: "button", "aria-pressed": "true", text: "Le budget de " + (cfg.qui || "l'exemple"), on: { click: function () { mode = "exemple"; rendu(); } } });
+      var b2 = h("button", { class: "btn secondaire petit", type: "button", "aria-pressed": "false", text: "Mon budget", on: { click: function () { mode = "perso"; rendu(); } } });
+      onglets = h("div", { class: "ligne", role: "group", "aria-label": "Choisir le budget" }, b1, b2);
+      zone.appendChild(onglets);
+    }
+    zone.appendChild(corps);
+    function valeurs() {
+      if (mode === "perso") return perso || { r: {}, d: {} };
+      return null;
+    }
+    function rendu() {
+      if (onglets) { onglets.children[0].setAttribute("aria-pressed", mode === "exemple"); onglets.children[1].setAttribute("aria-pressed", mode === "perso"); }
+      vider(corps);
+      var v = valeurs(), inputs = { r: {}, d: {} };
+      if (mode === "perso") corps.appendChild(h("p", { class: "note", text: "Tes chiffres restent sur ton appareil : ils ne sont envoyés à personne. Laisse 0 pour ce qui ne te concerne pas." }));
+      var resultat = h("div", { class: "pile", "aria-live": "polite", style: "gap:6px" });
+      function maj() {
+        var R = 0, F = 0, V = 0;
+        cfg.ressources.forEach(function (x) { R += nombre(inputs.r[x.id].value); });
+        cfg.depenses.forEach(function (x) { var m = nombre(inputs.d[x.id].value); if (x.type === "fixe") F += m; else V += m; });
+        var I = imprevu ? cfg.imprevu.montant : 0, solde = R - F - V - I;
+        vider(resultat);
+        resultat.appendChild(ligneTotal("Ressources", euros(R)));
+        resultat.appendChild(ligneTotal("Dépenses fixes", "– " + euros(F)));
+        resultat.appendChild(ligneTotal("Dépenses variables", "– " + euros(V)));
+        if (I) resultat.appendChild(ligneTotal(cfg.imprevu.label, "– " + euros(I)));
+        resultat.appendChild(ligneTotal("Reste à vivre (après les dépenses fixes)", euros(R - F)));
+        var s = h("div", { class: solde >= 0 ? "retour-ok" : "retour-ko" }, h("strong", { text: "Solde : " + euros(solde) + ". " }),
+          solde > 0 ? "Il te reste de l'argent : tu peux en mettre de côté." : solde === 0 ? "Budget à l'équilibre, sans marge pour un imprévu." : (cfg.conseil || "Budget dans le rouge : réduis d'abord les dépenses variables."));
+        resultat.appendChild(s);
+        if (mode === "perso" && cfg.cle) {
+          perso = { r: {}, d: {} };
+          cfg.ressources.forEach(function (x) { perso.r[x.id] = nombre(inputs.r[x.id].value); });
+          cfg.depenses.forEach(function (x) { perso.d[x.id] = nombre(inputs.d[x.id].value); });
+          Store.set(cfg.cle, perso);
+        }
+        if (imprevu && solde >= 0 && ctx && ctx.fini) ctx.fini();
+      }
+      var gR = h("fieldset", { class: "pile", style: "border:0;padding:0;margin:0;gap:8px" }, h("legend", { class: "titre-bloc", style: "font-size:16px", text: "Ce qui rentre" }));
+      cfg.ressources.forEach(function (x) {
+        var c = champEuro("bud-" + cfg.id + "-r-" + x.id, x.label, v ? (v.r[x.id] || 0) : x.montant, maj, x.aide);
+        inputs.r[x.id] = c.input; gR.appendChild(c.noeud);
+      });
+      var gF = h("fieldset", { class: "pile", style: "border:0;padding:0;margin:0;gap:8px" }, h("legend", { class: "titre-bloc", style: "font-size:16px", text: "Dépenses fixes (chaque mois le même montant)" }));
+      var gV = h("fieldset", { class: "pile", style: "border:0;padding:0;margin:0;gap:8px" }, h("legend", { class: "titre-bloc", style: "font-size:16px", text: "Dépenses variables (je peux agir dessus)" }));
+      cfg.depenses.forEach(function (x) {
+        var c = champEuro("bud-" + cfg.id + "-d-" + x.id, x.label, v ? (v.d[x.id] || 0) : x.montant, maj, x.aide);
+        inputs.d[x.id] = c.input; (x.type === "fixe" ? gF : gV).appendChild(c.noeud);
+      });
+      corps.appendChild(gR); corps.appendChild(gF); corps.appendChild(gV);
+      if (cfg.imprevu && mode === "exemple") corps.appendChild(h("button", { class: "btn pilier", type: "button", style: "align-self:flex-start", on: { click: function (ev) {
+        imprevu = !imprevu; ev.currentTarget.textContent = imprevu ? "Retirer l'imprévu" : "Un imprévu tombe : " + cfg.imprevu.label.toLowerCase();
+        maj();
+        if (imprevu) CapApp.toast(cfg.imprevu.label + " : " + euros(cfg.imprevu.montant) + ". Rééquilibre le budget.");
+      } } }, "Un imprévu tombe : " + (cfg.imprevu ? cfg.imprevu.label.toLowerCase() : "")));
+      corps.appendChild(h("div", { class: "carte pile", style: "background:var(--gris-fond);border-color:transparent" }, resultat));
+      maj();
+      if (!cfg.imprevu && ctx && ctx.fini) ctx.fini();
+    }
+    rendu();
+  }
+
+  // ---------- 19. CALCULATRICE D'ÉPARGNE ----------
+  // config : { id, placements:[{nom, taux}], montant, duree }  (taux en % par an)
+  // Calcul simplifié : intérêts calculés chaque mois et ajoutés une fois par an, comme sur un livret.
+  function epargne(zone, cfg, ctx) {
+    var sel = h("select", { id: "ep-" + cfg.id + "-p" }, cfg.placements.map(function (p, k) { return h("option", { value: String(k), text: p.nom + (p.taux ? " (" + String(p.taux).replace(".", ",") + " % par an)" : " (0 %)") }); }));
+    var res = h("div", { class: "pile", "aria-live": "polite", style: "gap:6px" });
+    var m = champEuro("ep-" + cfg.id + "-m", "Je mets de côté chaque mois", cfg.montant || 20, calc);
+    var dId = "ep-" + cfg.id + "-d";
+    var d = h("input", { type: "number", id: dId, min: "1", max: "120", step: "1", value: String(cfg.duree || 12), on: { input: calc } });
+    var obj = champEuro("ep-" + cfg.id + "-o", "Mon objectif (facultatif)", cfg.objectif || 0, calc, "par exemple le prix de mon projet");
+    sel.addEventListener("change", calc);
+    function calc() {
+      var p = cfg.placements[+sel.value], t = (p.taux || 0) / 100, mens = nombre(m.input.value), n = Math.max(1, Math.min(120, Math.round(nombre(d.value))));
+      var solde = 0, interetsAnnee = 0, interets = 0;
+      for (var i = 1; i <= n; i++) {
+        solde += mens;
+        var gain = solde * t / 12; interetsAnnee += gain;
+        if (i % 12 === 0 || i === n) { solde += interetsAnnee; interets += interetsAnnee; interetsAnnee = 0; }
+      }
+      var verse = mens * n;
+      vider(res);
+      res.appendChild(ligneTotal("J'ai versé", euros(verse)));
+      res.appendChild(ligneTotal("Les intérêts m'ont rapporté", euros(interets)));
+      res.appendChild(ligneTotal("Au bout de " + n + " mois, j'ai", euros(solde), true));
+      var o = nombre(obj.input.value);
+      if (o > 0) {
+        var besoin = Math.ceil(o / n * 100) / 100;
+        res.appendChild(h("div", { class: solde >= o ? "retour-ok" : "retour-info" }, solde >= o
+          ? "Objectif atteint : " + euros(o) + "."
+          : "Pour atteindre " + euros(o) + " en " + n + " mois, il faudrait mettre environ " + euros(besoin) + " par mois."));
+      }
+      res.appendChild(h("p", { class: "note", style: "margin:0", text: "Calcul simplifié : sur un vrai livret, les intérêts sont calculés par quinzaine et versés une fois par an." }));
+      if (ctx && ctx.fini) ctx.fini();
+    }
+    zone.appendChild(h("label", { class: "champ", for: sel.id }, h("span", { text: "Où je place mon argent" }), sel));
+    zone.appendChild(m.noeud);
+    zone.appendChild(h("label", { class: "champ", for: dId }, h("span", { text: "Pendant combien de mois" }), d));
+    zone.appendChild(obj.noeud);
+    zone.appendChild(h("div", { class: "carte pile", style: "background:var(--gris-fond);border-color:transparent" }, res));
+    calc();
+  }
+
+  // ---------- 20. SIMULATEUR DE CRÉDIT ----------
+  // config : { id, montant, duree, taeg, comparer: true }  (TAEG en % par an)
+  function credit(zone, cfg, ctx) {
+    var res = h("div", { class: "pile", "aria-live": "polite", style: "gap:6px" });
+    var mt = champEuro("cr-" + cfg.id + "-m", "Montant emprunté (ou prix de l'achat)", cfg.montant || 500, calc);
+    var dId = "cr-" + cfg.id + "-d", tId = "cr-" + cfg.id + "-t";
+    var d = h("input", { type: "number", id: dId, min: "1", max: "84", step: "1", value: String(cfg.duree || 12), on: { input: calc } });
+    var t = h("input", { type: "number", id: tId, min: "0", max: "30", step: "0.1", value: String(cfg.taeg != null ? cfg.taeg : 20), on: { input: calc } });
+    function calc() {
+      var P = nombre(mt.input.value), n = Math.max(1, Math.min(84, Math.round(nombre(d.value)))), taux = Math.max(0, nombre(t.value)) / 100, r = taux / 12;
+      var mens = r ? P * r / (1 - Math.pow(1 + r, -n)) : P / n, total = mens * n, cout = total - P;
+      vider(res);
+      res.appendChild(ligneTotal("Chaque mois, je rembourse", euros(mens), true));
+      res.appendChild(ligneTotal("Au total, je paie", euros(total)));
+      res.appendChild(ligneTotal("Le crédit m'a coûté", euros(cout)));
+      if (cfg.comparer) res.appendChild(h("div", { class: cout > 0 ? "retour-info" : "retour-ok" },
+        cout > 0 ? "Payé comptant, le même achat coûte " + euros(P) + " : le crédit coûte " + euros(cout) + " de plus, soit " + Math.round(cout / Math.max(P, 1) * 100) + " % du prix."
+                 : "Sans frais : tu paies le prix de l'achat. Mais c'est quand même un crédit : il faut payer chaque échéance, sinon des frais s'ajoutent."));
+      res.appendChild(h("p", { class: "note", style: "margin:0", text: "Le TAEG regroupe tous les coûts du crédit : c'est lui qu'on compare d'une offre à l'autre. Calcul indicatif." }));
+      if (ctx && ctx.fini) ctx.fini();
+    }
+    zone.appendChild(mt.noeud);
+    zone.appendChild(h("label", { class: "champ", for: dId }, h("span", { text: "Durée en mois" }), d));
+    zone.appendChild(h("label", { class: "champ", for: tId }, h("span", null, "TAEG en % par an", h("span", { class: "aide", text: " · 0 pour un paiement en plusieurs fois sans frais" })), t));
+    zone.appendChild(h("div", { class: "carte pile", style: "background:var(--gris-fond);border-color:transparent" }, res));
+    calc();
+  }
+
   window.h = h;
   window.vider = vider;
   window.icone = icone;
   window.Moteurs = { cartes: cartes, choisir: choisir, scenario: scenario, quiz: quiz, carnet: carnet, liste: liste, coherence: coherence, jauges: jauges,
-    defi: defi, binome: binome, reformuler: reformuler, tas: tas, debat: debat, repertoire: repertoire, cercles: cercles, retouche: retouche, motdepasse: motdepasse };
+    defi: defi, binome: binome, reformuler: reformuler, tas: tas, debat: debat, repertoire: repertoire, cercles: cercles, retouche: retouche, motdepasse: motdepasse,
+    budget: budget, epargne: epargne, credit: credit };
   window.analyserMdp = analyserMdp;
 })();

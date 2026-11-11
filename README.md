@@ -35,6 +35,7 @@ Ouvrez **`js/config.js`** : c'est le seul fichier à modifier. Renseignez le nom
 | `data/cps-terminale.js` | Les 5 séances CPS de Terminale |
 | `data/evars-seconde.js`, `evars-premiere.js`, `evars-terminale.js` | Les 3 séances EVARS de chaque niveau (programme EVARS de février 2025) |
 | `data/cyber-seconde.js`, `cyber-premiere.js`, `cyber-terminale.js` | Les 3 séances Cyber & esprit critique de chaque niveau (EMI, CRCN / Pix, CNIL) |
+| `data/educfi-seconde.js`, `educfi-premiere.js`, `educfi-terminale.js` | EDUCFI « Budget Express » : les 8 modules du Passeport EDUCFI en Seconde, 4 séances d'approfondissement en Première et en Terminale |
 | `data/orientation-seconde.js`, `orientation-premiere.js`, `orientation-terminale.js` | Les 3 séances Orientation de chaque niveau (référentiel des compétences à s'orienter, Parcoursup 2027) |
 | `js/engines.js` | Les moteurs d'activités réutilisables |
 | `js/app.js` | Les pages et la navigation |
@@ -82,6 +83,9 @@ Les deux commandes s'arrêtent avec une erreur s'il y a un problème : à corrig
 | `cercles` | Projet en quatre cercles, avec reprise des traces des séances précédentes |
 | `retouche` | Décodeur « Réel ou retouché ? » sur un portrait dessiné |
 | `motdepasse` | Testeur de robustesse d'un mot de passe inventé (repères CNIL). Rien n'est enregistré ni envoyé |
+| `budget` | Simulateur de budget (ressources, dépenses fixes et variables, imprévu, « Mon budget » enregistré sur l'appareil) |
+| `epargne` | Calculatrice d'épargne (versements, intérêts, objectif) |
+| `credit` | Simulateur de crédit (mensualité, coût total, comparaison avec le comptant) |
 
 Une séance peut être découpée en deux temps : champ `temps` de la séance (titres des deux temps) et champ `temps: 1` ou `temps: 2` sur chaque activité. Dans un quiz, une question `ordre` avec `libre: true` n'a pas de bonne réponse.
 
@@ -100,3 +104,8 @@ L'appli ne collecte aucune donnée : pas de compte, pas de statistiques, aucun a
 ### Situations par filière
 
 Une activité peut avoir un champ `parFiliere` : `{ ciel: { cas: [...] }, securite: { cartes: [...] } }`. Si l'élève a choisi sa filière dans « Mon espace », les situations (`cas` d'un scénario) ou les cartes (première manche d'un jeu de cartes) de sa filière s'ajoutent. Toute autre liste du même nom s'ajoute aussi (`sujets` d'un binôme, `questions` d'un quiz, `cartes` d'un tri…), et `config: {...}` remplace des réglages (par exemple la `note` d'une jauge ou les `cartes` d'un choix). Les filières sont déclarées dans `js/config.js` (`filieres`). Exemples : Cyber Terminale, séance 3 ; Orientation Seconde, séances 2 et 3.
+
+### EDUCFI : quiz officiels et ressources locales
+
+- Une séance peut porter `quizOfficiel: "Budget"` : un encadré rappelle de passer le quiz officiel du module du Passeport EDUCFI (plateforme de la Banque de France). L'appli ne garde aucun résultat.
+- Une séance peut porter `ressourcesLocales: ["mission-locale", "caf", "pcb", …]` : la section « Près de chez toi » affiche les ressources renseignées dans `ressourcesLocales` de `js/config.js` (les lignes laissées entre crochets ne s'affichent pas). Les ressources renseignées apparaissent aussi sur la page « Besoin d'aide ».

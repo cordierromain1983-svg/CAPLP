@@ -14,13 +14,17 @@ window.CAP_SITUATIONS = [
   { id: "relations", nom: "Mes relations, ma vie affective, ma santé",
     outils: ["aime-chez-moi", "reperes-relation", "envies-limites", "plan-soiree", "carte-sante", "bilan-evars"] },
   { id: "en-ligne", nom: "En ligne et sur les réseaux",
-    outils: ["journal-verification", "fil-loupe", "nettoyage-numerique", "plan-securite", "check-up-confidentialite", "reflexe-anti-arnaque", "charte-groupe", "charte-ia", "bilan-cyber-texte"] },
+    outils: ["detecteur-arnaques", "journal-verification", "fil-loupe", "nettoyage-numerique", "plan-securite", "check-up-confidentialite", "reflexe-anti-arnaque", "charte-groupe", "charte-ia", "bilan-cyber-texte"] },
   { id: "stage", nom: "Je pars en stage",
-    outils: ["regles-stage", "bilan-stage", "contacts-pros", "mes-qualites", "cv-reussites", "coherence-cardiaque"] },
+    outils: ["fiche-paie-verif", "projet-mobilite", "regles-stage", "bilan-stage", "contacts-pros", "mes-qualites", "cv-reussites", "coherence-cardiaque"] },
   { id: "candidater", nom: "Je cherche un emploi, une alternance ou une formation",
     outils: ["mon-cv", "lettre-type", "plan-candidatures", "reponses-entretien", "profil-pro", "contacts-pros", "reflexe-anti-arnaque", "cv-reussites"] },
   { id: "choisir", nom: "Je dois faire un choix",
-    outils: ["decider", "criteres-choix", "choix-fin-seconde", "direction-terminale", "actions-ete", "projet-cercles", "engagement-apres-bac", "mes-valeurs"] },
+    outils: ["avant-engager", "decider", "criteres-choix", "choix-fin-seconde", "direction-terminale", "actions-ete", "projet-cercles", "engagement-apres-bac", "mes-valeurs"] },
   { id: "me-connaitre", nom: "Mieux me connaître",
-    outils: ["portrait-orientation", "mes-qualites", "cv-reussites", "aime-chez-moi", "mes-valeurs", "valeurs-action", "mes-engagements", "roue-emotions"] }
+    outils: ["portrait-orientation", "mes-qualites", "cv-reussites", "aime-chez-moi", "mes-valeurs", "valeurs-action", "mes-engagements", "roue-emotions"] },
+  { id: "argent", nom: "Mon argent : budget, achats, crédit, arnaques",
+    outils: ["budget-du-mois", "reperes-bancaires", "carte-reflexes", "projet-epargne", "avant-engager", "ce-qui-protege", "mes-abonnements", "regles-argent-autres", "detecteur-arnaques", "impot-autour"] },
+  { id: "installer", nom: "Je m'installe : logement, aides, papiers",
+    outils: ["budget-entree-logement", "droits-a-verifier", "budget-jeune-actif", "classeur-administratif", "projet-mobilite", "fiche-paie-verif", "bilan-educfi-texte"] }
 ];

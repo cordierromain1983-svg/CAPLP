@@ -12,9 +12,11 @@
   // ---------- Services communs ----------
   var CapApp = {
     toast: function (msg) {
+      Array.prototype.forEach.call(document.querySelectorAll(".toast"), function (x) { x.remove(); });
       var t = h("div", { class: "toast", role: "status", text: msg });
       document.body.appendChild(t);
       setTimeout(function () { t.remove(); }, 2600);
+      window.addEventListener("hashchange", function () { t.remove(); }, { once: true });
     },
     imprimer: function (titre, noeud, opts) {
       opts = opts || {};
@@ -230,6 +232,12 @@
       Moteurs.quiz(zq, { id: s.id, questions: s.verifie }, { fini: function () { marquer(s.id, "verifie"); } });
     }
 
+    // Quiz officiel du Passeport EDUCFI (passé sur la plateforme de la Banque de France)
+    if (s.quizOfficiel) corps.appendChild(h("section", { class: "carte pile", style: "background:" + p.fond + ";border-color:transparent" },
+      h("h2", { class: "titre-bloc", text: "Le quiz officiel : module " + s.quizOfficiel }),
+      h("p", { text: "Pour valider ce module du Passeport EDUCFI, tu passes ensuite le quiz officiel avec ton professeur. Il faut au moins la moitié de bonnes réponses. Une fois les huit modules validés, le chef d'établissement te délivre le passeport." }),
+      h("p", { class: "note", text: "Les quiz officiels sont proposés par la Banque de France aux enseignants, sur Mes questions d'argent. Cap'Autonomie ne garde aucun résultat." })));
+
     // Voir aussi dans les autres piliers (liens réciproques)
     var lies = liensDe(s);
     if (lies.length) {
@@ -244,6 +252,9 @@
             icone("fleche"));
         })));
     }
+
+    // Près de chez toi (ressources locales renseignées par l'établissement)
+    if (s.ressourcesLocales) { var rl = sectionLocales(s.ressourcesLocales); if (rl) corps.appendChild(rl); }
 
     // Pour aller plus loin
     if (s.plusLoin && s.plusLoin.length) {
@@ -616,6 +627,7 @@
         h("div", { class: "pile", style: "gap:2px" }, h("p", { style: "font-weight:700", text: n.titre }), h("p", { class: "texte-doux", text: n.detail }))));
     });
     page.appendChild(nums);
+    if (locales(true).length) page.appendChild(sectionLocales(true));
     return page;
   }
 
@@ -667,6 +679,30 @@
         "Dernière mise à jour : " + (L.miseAJour || "novembre 2026")
       ])));
     return page;
+  }
+
+  // ---------- Ressources locales (js/config.js, ressourcesLocales) ----------
+  function locales(types) {
+    return ((window.CAP_CONFIG && CAP_CONFIG.ressourcesLocales) || []).filter(function (r) {
+      return r.nom && r.nom.indexOf("[") < 0 && (!types || types === true || types.indexOf(r.type) >= 0);
+    });
+  }
+  function sectionLocales(types) {
+    var l = locales(types);
+    var sec = h("section", { class: "pile", "aria-labelledby": "locales" }, h("h2", { id: "locales", class: "titre-bloc", text: "Près de chez toi" }));
+    if (!l.length) {
+      sec.appendChild(h("p", { class: "note", text: "Demande au CPE ou à l'assistante sociale l'adresse de la mission locale, de la CAF et du Point conseil budget les plus proches." }));
+      return sec;
+    }
+    l.forEach(function (r) {
+      var propre = function (x) { return x && x.indexOf("[") < 0 ? x : ""; };
+      sec.appendChild(h("div", { class: "carte pile", style: "gap:4px" },
+        h("strong", { text: r.nom }),
+        r.pour ? h("span", { class: "texte-doux", text: r.pour }) : null,
+        propre(r.adresse) ? h("span", { text: r.adresse }) : null,
+        propre(r.contact) ? h("span", { text: r.contact }) : null));
+    });
+    return sec;
   }
 
   function pageIntrouvable() {

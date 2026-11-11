@@ -38,7 +38,8 @@ var BESOINS = {
   cartes: ["manches"], choisir: ["cle", "cartes", "max"], scenario: ["id", "cas"], quiz: ["id", "questions"],
   carnet: ["cle", "champs"], liste: ["cle", "champs"], jauges: ["items"], tas: ["cle", "cartes", "tas", "garder"],
   reformuler: ["items", "champs", "gabarit"], debat: ["affirmations"], binome: ["sujets"], defi: ["joueurs", "options"],
-  repertoire: ["themes", "items"], cercles: ["cle", "cercles"], retouche: ["etapes"], motdepasse: [], coherence: []
+  repertoire: ["themes", "items"], cercles: ["cle", "cercles"], retouche: ["etapes"], motdepasse: [], coherence: [],
+  budget: ["id", "ressources", "depenses"], epargne: ["id", "placements"], credit: ["id"]
 };
 
 function blocs(s) { return (s.activites || []).concat(s.traces || []); }

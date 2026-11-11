@@ -25,6 +25,17 @@ window.CAP_CONFIG = {
     { nom: "Conseil de la vie lycéenne (CVL)", theme: "Vie du lycée", age: "Tous les lycéens", description: "Se présenter aux élections et porter les projets des élèves. Renseigne-toi auprès du CPE.", url: "" }
   ],
 
+  // Ressources près de chez vous (EDUCFI Terminale, séances 2 et 3, et page « Besoin d'aide »).
+  // Remplacez les [crochets] ; une ligne laissée entre crochets n'est pas affichée aux élèves.
+  // type : "mission-locale", "caf", "pcb" (Point conseil budget), "adil" (logement), "france-travail", "social", "autre"
+  ressourcesLocales: [
+    { type: "mission-locale", nom: "[Mission locale de votre ville]", adresse: "[Adresse]", contact: "[Téléphone ou site]", pour: "Emploi, formation, logement, contrat d'engagement jeune (16-25 ans)" },
+    { type: "caf", nom: "[CAF de votre département]", adresse: "[Adresse de l'accueil]", contact: "caf.fr", pour: "Aide au logement, prime d'activité" },
+    { type: "pcb", nom: "[Point conseil budget le plus proche]", adresse: "[Adresse]", contact: "[Téléphone]", pour: "Conseils gratuits en cas de difficulté d'argent" },
+    { type: "adil", nom: "[ADIL de votre département]", adresse: "[Adresse]", contact: "[Téléphone ou site]", pour: "Conseils gratuits sur le logement, le bail, le dépôt de garantie" },
+    { type: "social", nom: "Assistante sociale du lycée", adresse: "[Lieu]", contact: "[Horaires]", pour: "Écoute et aide pour toutes les démarches" }
+  ],
+
   // Mentions légales et confidentialité (page « Confidentialité et mentions légales »).
   // L'éditeur est l'établissement ; le directeur de la publication est en général le chef d'établissement.
   legal: {
