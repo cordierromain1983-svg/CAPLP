@@ -35,6 +35,10 @@ Ouvrez **`js/config.js`** : c'est le seul fichier à modifier. Renseignez le nom
 | `data/cps-terminale.js` | Les 5 séances CPS de Terminale |
 | `data/evars-seconde.js`, `evars-premiere.js`, `evars-terminale.js` | Les 3 séances EVARS de chaque niveau (programme EVARS de février 2025) |
 | `data/cyber-seconde.js`, `cyber-premiere.js`, `cyber-terminale.js` | Les 3 séances Cyber & esprit critique de chaque niveau (EMI, CRCN / Pix, CNIL) |
+| `data/droits.js`, `data/e3d.js` | Piliers Droits (stagiaire, contrat, majorité) et E3D (éco-gestes, métier, climat) : 3 séances par niveau. Écrits avec les raccourcis de `data/aides.js` |
+| `js/enseignant.js` | Espace enseignant (`#/enseignant`, code dans `js/config.js`) et mode classe (`#/classe/<séance>`) |
+| `js/passeport.js` | Passeport de compétences (`#/passeport`), confort de lecture, lecture à voix haute |
+| `js/qrcode.js` | Bibliothèque QR Code Generator (Kazuhiko Arase, licence MIT), hébergée avec l'appli |
 | `data/educfi-seconde.js`, `educfi-premiere.js`, `educfi-terminale.js` | EDUCFI « Budget Express » : les 8 modules du Passeport EDUCFI en Seconde, 4 séances d'approfondissement en Première et en Terminale |
 | `data/orientation-seconde.js`, `orientation-premiere.js`, `orientation-terminale.js` | Les 3 séances Orientation de chaque niveau (référentiel des compétences à s'orienter, Parcoursup 2027) |
 | `js/engines.js` | Les moteurs d'activités réutilisables |
@@ -109,3 +113,10 @@ Une activité peut avoir un champ `parFiliere` : `{ ciel: { cas: [...] }, securi
 
 - Une séance peut porter `quizOfficiel: "Budget"` : un encadré rappelle de passer le quiz officiel du module du Passeport EDUCFI (plateforme de la Banque de France). L'appli ne garde aucun résultat.
 - Une séance peut porter `ressourcesLocales: ["mission-locale", "caf", "pcb", …]` : la section « Près de chez toi » affiche les ressources renseignées dans `ressourcesLocales` de `js/config.js` (les lignes laissées entre crochets ne s'affichent pas). Les ressources renseignées apparaissent aussi sur la page « Besoin d'aide ».
+
+### Espace enseignant, mode classe, passeport
+
+- **Espace enseignant** (`#/enseignant`, lien en bas de l'accueil) : déroulé de chaque séance, progression de l'année à imprimer, cases « Faite avec ma classe » (gardées sur l'appareil de l'enseignant), QR code de chaque séance. Le code se règle dans `js/config.js` (`codeEnseignant`) ; c'est une barrière de discrétion, pas une protection forte, et l'espace ne contient aucune donnée d'élève.
+- **Mode classe** (`#/classe/<séance>`) : la séance projetée, sans téléphone. Chaque appui sur une réponse compte une main levée ; « Révéler la réponse » affiche la correction ; minuteur de 2, 5 ou 10 minutes ; flèches du clavier pour avancer et revenir.
+- **Passeport de compétences** (`#/passeport`) : séances faites, auto-évaluations (activités `jauges` avec `cle`) et nom des traces `rendre: true` remplies. L'élève l'enregistre en PDF ; rien n'est envoyé.
+- **Confort de lecture** (Mon espace) : texte plus grand, lecture facilitée (espacement), bouton « Écouter » dans chaque séance (voix de l'appareil).

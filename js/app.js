@@ -1,6 +1,6 @@
 /*
  * Cap'Autonomie — navigation et pages
- * Routes : #/  #/pilier/cps  #/seance/<id>  #/outils  #/outil/<id>  #/espace  #/aide  #/confidentialite
+ * Routes : #/  #/pilier/cps  #/seance/<id>  #/outils  #/outil/<id>  #/espace  #/aide  #/confidentialite  #/passeport  #/enseignant  #/classe/<id>
  */
 (function () {
   var main = document.getElementById("contenu");
@@ -108,7 +108,9 @@
       else { attrs["aria-disabled"] = "true"; grille.appendChild(h("div", attrs, contenu)); }
     });
     page.appendChild(grille);
-    page.appendChild(h("p", { class: "note" }, "Tout ce que tu écris reste sur cet appareil. Rien n'est envoyé sur internet. ", h("a", { href: "#/confidentialite" }, "Confidentialité et mentions légales")));
+    page.appendChild(h("a", { class: "seance-lien", href: "#/passeport" },
+      h("span", { class: "pile", style: "gap:2px;flex:1" }, h("span", { class: "t", text: "Mon passeport de compétences" }), h("span", { class: "s", text: "Ce que j'ai fait, ce que je sais faire, à enregistrer en PDF" })), icone("fleche")));
+    page.appendChild(h("p", { class: "note" }, "Tout ce que tu écris reste sur cet appareil. Rien n'est envoyé sur internet. ", h("a", { href: "#/confidentialite" }, "Confidentialité et mentions légales"), " · ", h("a", { href: "#/enseignant" }, "Espace enseignant")));
     return page;
   }
   function nomNiveau(id) { var n = NIVEAUX.filter(function (x) { return x.id === id; })[0]; return n ? n.nom : id; }
@@ -168,7 +170,12 @@
       h("span", { class: "surtitre", text: p.nom + " · " + nomNiveau(s.niveau) + " · Séance " + s.num }),
       h("h1", { class: "titre-page", text: s.titre }),
       h("p", { class: "meta", text: s.duree + " · " + s.objectif }),
-      passerelles(s)));
+      passerelles(s),
+      h("div", { class: "ligne no-print" },
+        window.CapPlus ? CapPlus.boutonEcouter(function () {
+          return [s.titre + ".", s.objectif, s.rappel && s.rappel.texte, s.accroche, s.retenir && s.retenir.length ? "Ce qu'il faut retenir. " + s.retenir.join(" ") : ""];
+        }) : null,
+        CapApp.pages && CapApp.pages.classe ? h("a", { class: "btn secondaire petit", href: "#/classe/" + s.id, text: "Projeter en classe" }) : null)));
 
     var corps = h("div", { class: "page" });
 
@@ -548,6 +555,10 @@
     sec.appendChild(h("p", { class: "note", text: "Une séance est faite quand l'activité et « Je vérifie » sont terminés. Pas de note, pas de classement." }));
     page.appendChild(sec);
 
+    page.appendChild(h("a", { class: "seance-lien", href: "#/passeport" },
+      h("span", { class: "pile", style: "gap:2px;flex:1" }, h("span", { class: "t", text: "Mon passeport de compétences" }), h("span", { class: "s", text: "Séances faites, auto-évaluations, productions : à enregistrer en PDF" })), icone("fleche")));
+    if (window.CapPlus) page.appendChild(CapPlus.sectionConfort());
+
     // Ma filière (facultatif, reste sur l'appareil)
     if (filieres().length) {
       var actuelle = Store.get("filiere", "");
@@ -651,6 +662,7 @@
       p("Pour que l'appli fonctionne, ton navigateur garde sur ton appareil (stockage local) : ta progression, tes traces et tes carnets, ton niveau, ta filière si tu l'as indiquée, et la dernière séance ouverte."),
       p("Ce stockage sert uniquement à faire fonctionner ce que tu utilises : il ne demande pas de consentement, et ce ne sont pas des cookies publicitaires."),
       p("Le testeur de mot de passe n'enregistre rien : tout est calculé sur ton appareil."),
+      p("Le passeport de compétences est fabriqué sur ton appareil à partir de ta progression : il n'est envoyé nulle part, c'est toi qui choisis de l'enregistrer ou de le montrer. Le bouton « Écouter » utilise la voix de ton appareil."),
       h("a", { class: "btn secondaire petit", href: "#/espace", style: "align-self:flex-start" }, "Voir ou effacer mes données")));
     page.appendChild(bloc("Quand tu rends une trace à ton professeur",
       liste(["Certaines traces portent la mention « À rendre si ton professeur le demande ». Tu les enregistres en PDF et tu les déposes sur l'ENT.",
@@ -724,9 +736,13 @@
       case "espace": vue = pageEspace(); nav = "espace"; break;
       case "aide": vue = pageAide(); nav = ""; break;
       case "confidentialite": vue = pageConfidentialite(); nav = ""; break;
+      case "passeport": vue = window.CapPlus ? CapPlus.pagePasseport() : pageIntrouvable(); nav = "espace"; break;
+      case "enseignant": vue = CapApp.pages && CapApp.pages.enseignant ? CapApp.pages.enseignant(parts) : pageIntrouvable(); nav = ""; break;
+      case "classe": vue = CapApp.pages && CapApp.pages.classe ? CapApp.pages.classe(parts) : pageIntrouvable(); nav = ""; break;
       default: vue = pageIntrouvable();
     }
     vider(main);
+    document.body.classList.toggle("mode-classe", parts[0] === "classe");
     main.appendChild(vue);
     document.querySelectorAll("[data-nav]").forEach(function (a) {
       if (a.getAttribute("data-nav") === nav) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
@@ -736,8 +752,10 @@
     window.scrollTo(0, 0);
     try { main.focus({ preventScroll: true }); } catch (e) {}
   }
+  CapApp.rafraichir = route;
   window.addEventListener("hashchange", route);
-  route();
+  // Les pages de l'espace enseignant et du passeport sont chargées après ce fichier : on attend la fin du chargement.
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", route); else route();
 
   // ---------- Hors ligne (si hébergé en https) ----------
   if ("serviceWorker" in navigator && location.protocol === "https:") {

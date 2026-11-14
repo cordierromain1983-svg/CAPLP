@@ -25,6 +25,11 @@ window.CAP_CONFIG = {
     { nom: "Conseil de la vie lycéenne (CVL)", theme: "Vie du lycée", age: "Tous les lycéens", description: "Se présenter aux élections et porter les projets des élèves. Renseigne-toi auprès du CPE.", url: "" }
   ],
 
+  // Code de l'espace enseignant (déroulés, projection en classe, QR codes). Changez-le et donnez-le
+  // à vos collègues. C'est une barrière de discrétion, pas une protection forte : cet espace ne contient
+  // aucune donnée d'élève. Laissez "" pour un accès sans code.
+  codeEnseignant: "prof2026",
+
   // Ressources près de chez vous (EDUCFI Terminale, séances 2 et 3, et page « Besoin d'aide »).
   // Remplacez les [crochets] ; une ligne laissée entre crochets n'est pas affichée aux élèves.
   // type : "mission-locale", "caf", "pcb" (Point conseil budget), "adil" (logement), "france-travail", "social", "autre"

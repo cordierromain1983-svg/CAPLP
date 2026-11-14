@@ -340,3 +340,67 @@ table.fiche-table tr:last-child th, table.fiche-table tr:last-child td { border-
 .filiere-note { font-size: 14px; }
 .note-rendre { font-size: 14px; margin: 0; padding: 8px 12px; border-radius: 10px; background: #E8F3E6; color: #1E4D1E; }
 .note-rendre.prive { background: #EEF1F5; color: #2A2F36; }
+
+/* ---------- Espace enseignant ---------- */
+.ens-pastille { display: inline-block; width: 12px; height: 12px; border-radius: 6px; background: var(--p); margin-right: 8px; }
+.ens-seance { gap: 8px; }
+.ens-coche { display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 15px; cursor: pointer; }
+.ens-coche input { width: 22px; height: 22px; accent-color: var(--encre); flex: none; }
+.ens-detail summary { cursor: pointer; font-weight: 700; font-size: 14px; min-height: 40px; display: flex; align-items: center; }
+.ens-detail[open] { display: flex; flex-direction: column; gap: 10px; }
+.ens-detail p { margin: 0; font-size: 14px; }
+table.ens-tableau { min-width: 0; font-size: 13px; }
+.qr svg { width: 100%; max-width: 320px; height: auto; display: block; background: #fff; border-radius: 12px; }
+.qr-page { align-items: center; text-align: center; }
+#doc-impression .qr svg { max-width: 9cm; margin: 0 auto; }
+
+/* ---------- Mode classe (vidéoprojecteur) ---------- */
+body.mode-classe .nav-bas { display: none; }
+body.mode-classe .app { max-width: none; padding-bottom: 0; }
+.classe { min-height: 100vh; display: flex; flex-direction: column; background: var(--carte); }
+.classe-tete { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding: 14px clamp(16px, 4vw, 48px); background: var(--p-fond); }
+.classe-titre { font-size: clamp(22px, 3vw, 38px); margin: 0; }
+.classe-rang { font-size: clamp(14px, 1.6vw, 20px); color: var(--doux); }
+.classe-minuteur { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.classe-chrono { font-size: clamp(22px, 2.6vw, 34px); font-weight: 700; font-variant-numeric: tabular-nums; min-width: 4.2ch; }
+.classe-chrono.fini { color: var(--ko); }
+.classe-zone { flex: 1; display: flex; flex-direction: column; gap: clamp(14px, 2vw, 26px); padding: clamp(18px, 3vw, 40px) clamp(16px, 4vw, 48px); max-width: 1500px; width: 100%; margin: 0 auto; }
+.classe-consigne { font-size: clamp(17px, 2vw, 26px); color: var(--encre-2); margin: 0; line-height: 1.4; }
+.classe-enonce { font-size: clamp(22px, 3.2vw, 44px); font-weight: 700; margin: 0; line-height: 1.25; }
+.classe-bulle { font-size: clamp(18px, 2.2vw, 30px); margin: 0; padding: 14px 18px; border-radius: 18px; background: var(--gris-fond); }
+.classe-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 12px; }
+.classe-options.colonne { grid-template-columns: 1fr; }
+.classe-option { display: flex; justify-content: space-between; align-items: center; gap: 12px; text-align: left; min-height: 64px; padding: 12px 18px; border-radius: 16px; border: 2px solid var(--trait-fort); background: var(--carte); font: inherit; font-size: clamp(17px, 2vw, 28px); font-weight: 700; color: var(--encre); cursor: pointer; }
+.classe-option:hover { background: var(--gris-fond); }
+.classe-option.juste { border-color: #1E7A3C; background: #E8F3E6; opacity: 1; }
+.classe-option.autre { opacity: .55; }
+.classe-option[disabled] { cursor: default; }
+.classe-compte { flex: none; min-width: 2.2em; text-align: center; padding: 2px 10px; border-radius: 999px; background: var(--encre); color: #fff; font-variant-numeric: tabular-nums; }
+.classe-choix { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; }
+.classe-explication { font-size: clamp(16px, 1.9vw, 26px); margin: 0; padding: 14px 18px; border-radius: 16px; }
+.classe-liste { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 10px; font-size: clamp(18px, 2.4vw, 32px); line-height: 1.35; }
+.classe-liste.ordonnee { list-style: none; padding-left: 0; }
+.classe-moteur { max-width: 760px; }
+.classe-fin { display: grid; grid-template-columns: 1fr minmax(180px, 320px); gap: 24px; align-items: center; }
+.classe-pied { position: sticky; bottom: 0; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; padding: 10px clamp(16px, 4vw, 48px); background: var(--carte); border-top: 1px solid var(--trait); }
+.classe-avance { color: var(--doux); font-variant-numeric: tabular-nums; }
+@media (max-width: 700px) { .classe-fin { grid-template-columns: 1fr; } }
+
+/* ---------- Passeport de compétences ---------- */
+.passeport-pilier { border-left: 6px solid var(--p); }
+.passeport-pilier.vide { opacity: .8; }
+.passeport-sous { font-size: 15px; margin: 4px 0 0; }
+.passeport-liste { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; font-size: 15px; }
+.passeport-jauges { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; font-size: 15px; }
+.passeport-jauges li { display: flex; flex-direction: column; gap: 4px; }
+.passeport-visa { margin-top: 18px; font-size: 13px; }
+#doc-impression .passeport-pilier { break-inside: avoid; border: 1px solid #ccc; border-left: 6px solid var(--p); padding: 10px 14px; margin-bottom: 10px; }
+#doc-impression .progression { border: 1px solid #999; }
+#doc-impression .progression span { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+/* ---------- Confort de lecture ---------- */
+html.texte-grand .app { zoom: 1.18; }
+html.mode-dys body { letter-spacing: .05em; word-spacing: .14em; line-height: 1.75; }
+html.mode-dys p, html.mode-dys li { max-width: 62ch; }
+.passeport-jauges .progression { display: block; }
+[hidden] { display: none !important; }

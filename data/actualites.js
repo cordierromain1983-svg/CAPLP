@@ -57,6 +57,11 @@
     cejMax:           { texte: "environ 552 € par mois", source: "https://www.francetravail.fr/candidat/mes-droits-aux-aides-et-allocati/aides-financieres-et-autres-allo/autres-allocations/lallocation-cej--les-reponses-a.html", utilise: "EDUCFI Terminale S2" },
     visaleAge:        { texte: "18 à 30 ans", source: "https://www.actionlogement.fr/la-garantie-visale", utilise: "EDUCFI Terminale S1" },
 
+    // ---------- Droits et E3D ----------
+    presidentielle2027: { texte: "18 avril et 2 mai 2027", source: "https://www.maire-info.com/election-presidentielle/presidentielle-un-choix-de-dates-qui-ne-sera-pas-sans-difficulte-pour-les-maires-art26-30951 (à retirer après l'élection)", utilise: "Droits Terminale S1" },
+    empreinteMoyenne:  { texte: "environ 8 tonnes", source: "https://www.statistiques.developpement-durable.gouv.fr/edition-numerique/chiffres-cles-du-climat/fr/18-empreinte-carbone-et-emissions-territoriales (8,3 t CO2 éq par personne)", utilise: "E3D Seconde S1" },
+    empreinteCible:    { texte: "environ 2 tonnes d'ici 2050", source: "Ordre de grandeur compatible avec l'accord de Paris (ADEME, Nos Gestes Climat)", utilise: "E3D Seconde S1" },
+
     // ---------- Lois et règlements ----------
     iaTransparence:   { texte: "2 août 2026", source: "Règlement européen sur l'IA (obligations de transparence)", utilise: "Cyber Terminale S1" },
     loiSren:          { texte: "21 mai 2024", source: "https://www.legifrance.gouv.fr (loi n° 2024-449 visant à sécuriser et à réguler l'espace numérique)", utilise: "Cyber Terminale S1" },
@@ -68,7 +73,7 @@
 
   var manquants = [];
   window.CAP_ACTU = {
-    verifie: "2026-11-11",
+    verifie: "2026-11-14",
     faits: F,
     manquants: manquants,
     texte: function (cle) {
